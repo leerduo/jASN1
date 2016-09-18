@@ -7,3 +7,6 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
+/.gradle/2.9/taskArtifacts
+/projects/jasn1-compiler/build
+/projects/jasn1/build
