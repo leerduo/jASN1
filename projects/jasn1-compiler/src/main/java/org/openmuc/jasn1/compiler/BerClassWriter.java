@@ -29,29 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openmuc.jasn1.ber.BerIdentifier;
-import org.openmuc.jasn1.compiler.model.AsnAny;
-import org.openmuc.jasn1.compiler.model.AsnAnyNoDecode;
-import org.openmuc.jasn1.compiler.model.AsnBitString;
-import org.openmuc.jasn1.compiler.model.AsnBoolean;
-import org.openmuc.jasn1.compiler.model.AsnCharacterString;
-import org.openmuc.jasn1.compiler.model.AsnChoice;
-import org.openmuc.jasn1.compiler.model.AsnConstructedType;
-import org.openmuc.jasn1.compiler.model.AsnDefinedType;
-import org.openmuc.jasn1.compiler.model.AsnElementType;
-import org.openmuc.jasn1.compiler.model.AsnEnum;
-import org.openmuc.jasn1.compiler.model.AsnInteger;
-import org.openmuc.jasn1.compiler.model.AsnModule;
-import org.openmuc.jasn1.compiler.model.AsnNull;
-import org.openmuc.jasn1.compiler.model.AsnObjectIdentifier;
-import org.openmuc.jasn1.compiler.model.AsnOctetString;
-import org.openmuc.jasn1.compiler.model.AsnReal;
-import org.openmuc.jasn1.compiler.model.AsnSequenceOf;
-import org.openmuc.jasn1.compiler.model.AsnSequenceSet;
-import org.openmuc.jasn1.compiler.model.AsnTaggedType;
-import org.openmuc.jasn1.compiler.model.AsnType;
-import org.openmuc.jasn1.compiler.model.AsnTypes;
-import org.openmuc.jasn1.compiler.model.AsnUniversalType;
-import org.openmuc.jasn1.compiler.model.SymbolsFromModule;
+import org.openmuc.jasn1.compiler.model.*;
 
 public class BerClassWriter {
 
@@ -60,6 +38,7 @@ public class BerClassWriter {
 	private int indentNum = 0;
 	BufferedWriter out;
 	private boolean isDefaultTagExplicit = true;
+	private boolean automaticTags = false;
 	private boolean supportIndefiniteLength = false;
 	private final HashMap<String, AsnModule> modulesByName;
 	private AsnModule module;
@@ -100,6 +79,9 @@ public class BerClassWriter {
 		if (module.tagDefault.equals("IMPLICIT")) {
 			isDefaultTagExplicit = false;
 		}
+		if (module.tagDefault.equals("AUTOMATIC")) {
+			automaticTags = true;
+		}
 
 		for (AsnType typeDefinition : asnTypes.typesByName.values()) {
 
@@ -113,6 +95,10 @@ public class BerClassWriter {
 
 				String tagClass = getTagClass(asnTaggedType);
 				String tagNum = getTagNum(asnTaggedType);
+				// TODO: start with zero if auto tagging is defined, not sure if this is correct
+				if (tagNum.isEmpty() && automaticTags) {
+					tagNum = "0";
+				}
 				String assignedTypeName = asnTaggedType.typeName;
 				boolean isTagExplicit = hasExplicitTag(asnTaggedType);
 
@@ -139,7 +125,12 @@ public class BerClassWriter {
 						typeDefinition);
 			}
 			else if (typeDefinition instanceof AsnConstructedType) {
-				writeConstructedTypeClass(typeDefinition, "", "", typeName, false);
+				String tagNum = "";
+				// TODO: start with zero if auto tagging is defined, not sure if this is correct
+				if (automaticTags) {
+					tagNum = "0";
+				}
+				writeConstructedTypeClass(typeDefinition, tagNum, "", typeName, false);
 			}
 			else {
 				writeRetaggingTypeClass("", "", typeName, getBerType(typeDefinition), false, typeDefinition);
@@ -432,9 +423,7 @@ public class BerClassWriter {
 	private void writeSequenceOfClass(AsnSequenceOf asnSequenceOf, String tagNum, String tagClass, String className,
 			boolean asInternalClass) throws IOException {
 
-		if (tagClass.isEmpty()) {
-			tagClass = "UNIVERSAL_CLASS";
-		}
+		tagClass = getTagClass(tagClass);
 		if (tagNum.isEmpty()) {
 			if (asnSequenceOf.isSequenceOf) {
 				tagNum = "16";
@@ -643,12 +632,21 @@ public class BerClassWriter {
 
 	}
 
-	private void writeSequenceOrSetClass(AsnSequenceSet asnSequenceSet, String tagNum, String tagClass,
-			String className, boolean asInternalClass) throws IOException {
-
+	private String getTagClass(String tagClass) {
 		if (tagClass.isEmpty()) {
 			tagClass = "UNIVERSAL_CLASS";
 		}
+		// TODO: not sure if this is correct
+		if (automaticTags) {
+			tagClass = "CONTEXT_CLASS";
+		}
+		return tagClass;
+	}
+
+	private void writeSequenceOrSetClass(AsnSequenceSet asnSequenceSet, String tagNum, String tagClass,
+			String className, boolean asInternalClass) throws IOException {
+
+		tagClass = getTagClass(tagClass);
 		if (tagNum.isEmpty()) {
 			if (asnSequenceSet.isSequence) {
 				tagNum = "16";
@@ -1204,6 +1202,32 @@ public class BerClassWriter {
 
 	}
 
+	private void addAutomaticTagsIfNeeded(List<AsnElementType> sequenceElements) {
+		if (sequenceElements == null) {
+			return;
+		}
+		if (automaticTags) {
+			boolean hasOptionalElement = false;
+			for (int j = sequenceElements.size() - 1; j >= 0; j--) {
+				if (isOptional(sequenceElements.get(j))) {
+					hasOptionalElement = true;
+					break;
+				}
+			}
+			// add tags now if needed
+			if (hasOptionalElement) {
+				for (int j = sequenceElements.size() - 1; j >= 0; j--) {
+					sequenceElements.get(j).tagType = "IMPLICIT";
+					if (sequenceElements.get(j).tag == null) {
+						sequenceElements.get(j).tag = new AsnTag();
+						sequenceElements.get(j).tag.classNumber = new AsnClassNumber();
+					}
+					sequenceElements.get(j).tag.classNumber.num = j;
+				}
+			}
+		}
+	}
+
 	private void writeSequenceOrSetEncodeFunction(List<AsnElementType> sequenceElements) throws IOException {
 		write("public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {\n");
 
@@ -1218,6 +1242,8 @@ public class BerClassWriter {
 		write("else {");
 
 		write("codeLength = 0;");
+
+		addAutomaticTagsIfNeeded(sequenceElements);
 
 		for (int j = sequenceElements.size() - 1; j >= 0; j--) {
 			if (hasExplicitTag(sequenceElements.get(j))) {
