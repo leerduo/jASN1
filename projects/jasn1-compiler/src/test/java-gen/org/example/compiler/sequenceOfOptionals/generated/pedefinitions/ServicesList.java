@@ -258,6 +258,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				contactless = new BerNull();
+				contactless.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0);
 				subCodeLength += contactless.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -274,6 +275,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				usim = new BerNull();
+				usim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1);
 				subCodeLength += usim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -290,6 +292,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				isim = new BerNull();
+				isim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2);
 				subCodeLength += isim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -306,6 +309,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 				csim = new BerNull();
+				csim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3);
 				subCodeLength += csim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -322,6 +326,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 4)) {
 				milenage = new BerNull();
+				milenage.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 4);
 				subCodeLength += milenage.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -338,6 +343,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 5)) {
 				tuak128 = new BerNull();
+				tuak128.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 5);
 				subCodeLength += tuak128.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -354,6 +360,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 				cave = new BerNull();
+				cave.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 6);
 				subCodeLength += cave.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -370,6 +377,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 				gba_usim = new BerNull();
+				gba_usim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 7);
 				subCodeLength += gba_usim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -386,6 +394,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 				gba_isim = new BerNull();
+				gba_isim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8);
 				subCodeLength += gba_isim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -402,6 +411,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 9)) {
 				mbms = new BerNull();
+				mbms.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 9);
 				subCodeLength += mbms.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -418,6 +428,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 				eap = new BerNull();
+				eap.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 10);
 				subCodeLength += eap.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -434,6 +445,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 				javacard = new BerNull();
+				javacard.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 11);
 				subCodeLength += javacard.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -450,6 +462,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 12)) {
 				multos = new BerNull();
+				multos.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 12);
 				subCodeLength += multos.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -466,6 +479,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 13)) {
 				multiple_usim = new BerNull();
+				multiple_usim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 13);
 				subCodeLength += multiple_usim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -482,6 +496,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 14)) {
 				multiple_isim = new BerNull();
+				multiple_isim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 14);
 				subCodeLength += multiple_isim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -498,6 +513,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				multiple_csim = new BerNull();
+				multiple_csim.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 15);
 				subCodeLength += multiple_csim.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
@@ -514,6 +530,7 @@ public class ServicesList {
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 16)) {
 				tuak256 = new BerNull();
+				tuak256.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 16);
 				subCodeLength += tuak256.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}

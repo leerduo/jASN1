@@ -31,7 +31,7 @@ public class BerOctetString {
 
 	public final static BerIdentifier identifier = new BerIdentifier(BerIdentifier.UNIVERSAL_CLASS,
 			BerIdentifier.PRIMITIVE, BerIdentifier.OCTET_STRING_TAG);
-	protected BerIdentifier id;
+	public BerIdentifier id;
 
 	public byte[] value;
 

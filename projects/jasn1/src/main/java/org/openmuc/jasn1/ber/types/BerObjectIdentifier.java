@@ -33,7 +33,7 @@ public class BerObjectIdentifier {
 
 	public final static BerIdentifier identifier = new BerIdentifier(BerIdentifier.UNIVERSAL_CLASS,
 			BerIdentifier.PRIMITIVE, BerIdentifier.OBJECT_IDENTIFIER_TAG);
-	protected BerIdentifier id;
+	public BerIdentifier id;
 
 	public byte[] code = null;
 

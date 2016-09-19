@@ -369,6 +369,9 @@ public class BerClassWriter {
 
 		write("int codeLength = 0;");
 
+		// NOTE: adding tag number in choices if automatic tagging is turned on
+		addAutomaticTagsIfNeeded(choiceElements, true);
+
 		for (int j = choiceElements.size() - 1; j >= 0; j--) {
 			if (hasExplicitTag(choiceElements.get(j))) {
 				write("int sublength;\n");
@@ -935,6 +938,12 @@ public class BerClassWriter {
 					write(getSequenceElementName(sequenceElement) + " = new "
 							+ getClassNameOfStructureElement(sequenceElement) + "();");
 
+					if (hasTag(sequenceElement)) {
+						// NOTE: use the same id as provided
+						write(getSequenceElementName(sequenceElement) + ".id = new BerIdentifier(BerIdentifier." + getTagClass(sequenceElement) +
+								", BerIdentifier." + (!isPrimitive(sequenceElement) ? "CONSTRUCTED" : "PRIMITIVE") + ", " + getTagNum(sequenceElement) + ");");
+					}
+
 					write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, "
 							+ explicitEncoding + ");");
 
@@ -1202,16 +1211,18 @@ public class BerClassWriter {
 
 	}
 
-	private void addAutomaticTagsIfNeeded(List<AsnElementType> sequenceElements) {
+	private void addAutomaticTagsIfNeeded(List<AsnElementType> sequenceElements, boolean isChoice) {
 		if (sequenceElements == null) {
 			return;
 		}
 		if (automaticTags) {
-			boolean hasOptionalElement = false;
-			for (int j = sequenceElements.size() - 1; j >= 0; j--) {
-				if (isOptional(sequenceElements.get(j))) {
-					hasOptionalElement = true;
-					break;
+			boolean hasOptionalElement = isChoice;
+			if (!isChoice) {
+				for (int j = sequenceElements.size() - 1; j >= 0; j--) {
+					if (isOptional(sequenceElements.get(j))) {
+						hasOptionalElement = true;
+						break;
+					}
 				}
 			}
 			// add tags now if needed
@@ -1243,7 +1254,7 @@ public class BerClassWriter {
 
 		write("codeLength = 0;");
 
-		addAutomaticTagsIfNeeded(sequenceElements);
+		addAutomaticTagsIfNeeded(sequenceElements, false);
 
 		for (int j = sequenceElements.size() - 1; j >= 0; j--) {
 			if (hasExplicitTag(sequenceElements.get(j))) {
