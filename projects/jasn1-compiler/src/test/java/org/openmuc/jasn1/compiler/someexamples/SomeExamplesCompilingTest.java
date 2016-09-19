@@ -101,9 +101,9 @@ public class SomeExamplesCompilingTest {
         servicesList.milenage = new BerNull();
         servicesList.javacard = new BerNull();
         headerProfileElement.header = new ProfileHeader(new UInt8(2), new UInt8(0),
-                new BerUTF8String("SIMalliance Profile Package"),
+                new BerUTF8String("SIMalliance Sample Profile"),
                 new BerOctetString(Hex.decodeHex("89019990001234567893".toCharArray())),
-                new BerOctetString(new byte[]{1, 2, 3}),
+                null,
                 servicesList, GFSTEList, null);
 
         BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
