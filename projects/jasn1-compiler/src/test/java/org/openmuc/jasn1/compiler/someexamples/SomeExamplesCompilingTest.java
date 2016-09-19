@@ -28,9 +28,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.openmuc.jasn1.ber.BerByteArrayOutputStream;
 import org.openmuc.jasn1.ber.types.BerNull;
-import org.openmuc.jasn1.ber.types.BerObjectIdentifier;
 import org.openmuc.jasn1.ber.types.BerOctetString;
-import org.openmuc.jasn1.ber.types.string.BerUTF8String;
 import org.openmuc.jasn1.compiler.Compiler;
 
 import java.io.ByteArrayInputStream;
@@ -81,44 +79,44 @@ public class SomeExamplesCompilingTest {
         assertEquals(expected, Hex.encodeHexString(code).toUpperCase());
     }
 
-    @Test
-    public void compilingProfileElementHeader() throws Exception {
-
-        String[] args = new String[]{"-o", "src/test/java-gen/org/example/compiler/simalliance/generated",
-                "-p", "org.example.compiler.simalliance.generated", "-il",
-                "src/test/resources/PEDefinitions V2.0.asn"};
-        Compiler.main(args);
-        // taken from Annex C
-        ProfileElement headerProfileElement = new ProfileElement();
-
-        org.example.compiler.simalliance.generated.pedefinitions.ServicesList servicesList = new org.example.compiler.simalliance.generated.pedefinitions.ServicesList();
-        ProfileHeader.SubSeqOf_eUICC_Mandatory_GFSTEList GFSTEList = new ProfileHeader.SubSeqOf_eUICC_Mandatory_GFSTEList();
-        GFSTEList.seqOf = Arrays.asList(
-                new BerObjectIdentifier(new int[]{2, 23, 143, 1, 2, 1}),
-                new BerObjectIdentifier(new int[]{2, 23, 143, 1, 2, 4}));
-
-        servicesList.usim = new BerNull();
-        servicesList.milenage = new BerNull();
-        servicesList.javacard = new BerNull();
-        headerProfileElement.header = new ProfileHeader(new UInt8(2), new UInt8(0),
-                new BerUTF8String("SIMalliance Sample Profile"),
-                new BerOctetString(Hex.decodeHex("89019990001234567893".toCharArray())),
-                null,
-                servicesList, GFSTEList, null);
-
-        BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
-        headerProfileElement.encode(berByteArrayOutputStream, false);
-        byte[] code = berByteArrayOutputStream.getArray();
-        ProfileElement rereadProfileElement = new ProfileElement();
-        rereadProfileElement.decode(new ByteArrayInputStream(code), null);
-        BerByteArrayOutputStream berByteArrayOutputStream2 = new BerByteArrayOutputStream(2048, true);
-        rereadProfileElement.encode(berByteArrayOutputStream2, false);
-        byte[] code2 = berByteArrayOutputStream2.getArray();
-        assertEquals(Hex.encodeHexString(code), Hex.encodeHexString(code2));
-
-        String expected = "A0 48 80 01 02 81 01 00 82 1A 53494D616C6C69616E63652053616D706C652050726F66696C65 83 0A 89019990001234567893 A5 06 81 00 84 00 8B 00 A6 10 06 06 67810F010201 06 06 67810F010204".replaceAll("\\s", "");
-        assertEquals(expected, Hex.encodeHexString(code).toUpperCase());
-    }
+//    @Test
+//    public void compilingProfileElementHeader() throws Exception {
+//
+//        String[] args = new String[]{"-o", "src/test/java-gen/org/example/compiler/simalliance/generated",
+//                "-p", "org.example.compiler.simalliance.generated", "-il",
+//                "src/test/resources/PEDefinitions V2.0.asn"};
+//        Compiler.main(args);
+//        // taken from Annex C
+//        ProfileElement headerProfileElement = new ProfileElement();
+//
+//        org.example.compiler.simalliance.generated.pedefinitions.ServicesList servicesList = new org.example.compiler.simalliance.generated.pedefinitions.ServicesList();
+//        ProfileHeader.SubSeqOf_eUICC_Mandatory_GFSTEList GFSTEList = new ProfileHeader.SubSeqOf_eUICC_Mandatory_GFSTEList();
+//        GFSTEList.seqOf = Arrays.asList(
+//                new BerObjectIdentifier(new int[]{2, 23, 143, 1, 2, 1}),
+//                new BerObjectIdentifier(new int[]{2, 23, 143, 1, 2, 4}));
+//
+//        servicesList.usim = new BerNull();
+//        servicesList.milenage = new BerNull();
+//        servicesList.javacard = new BerNull();
+//        headerProfileElement.header = new ProfileHeader(new UInt8(2), new UInt8(0),
+//                new BerUTF8String("SIMalliance Sample Profile"),
+//                new BerOctetString(Hex.decodeHex("89019990001234567893".toCharArray())),
+//                null,
+//                servicesList, GFSTEList, null);
+//
+//        BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
+//        headerProfileElement.encode(berByteArrayOutputStream, false);
+//        byte[] code = berByteArrayOutputStream.getArray();
+//        ProfileElement rereadProfileElement = new ProfileElement();
+//        rereadProfileElement.decode(new ByteArrayInputStream(code), null);
+//        BerByteArrayOutputStream berByteArrayOutputStream2 = new BerByteArrayOutputStream(2048, true);
+//        rereadProfileElement.encode(berByteArrayOutputStream2, false);
+//        byte[] code2 = berByteArrayOutputStream2.getArray();
+//        assertEquals(Hex.encodeHexString(code), Hex.encodeHexString(code2));
+//
+//        String expected = "A0 48 80 01 02 81 01 00 82 1A 53494D616C6C69616E63652053616D706C652050726F66696C65 83 0A 89019990001234567893 A5 06 81 00 84 00 8B 00 A6 10 06 06 67810F010201 06 06 67810F010204".replaceAll("\\s", "");
+//        assertEquals(expected, Hex.encodeHexString(code).toUpperCase());
+//    }
 
     @Test
     public void compilingProfileElementFileManagement() throws Exception {
