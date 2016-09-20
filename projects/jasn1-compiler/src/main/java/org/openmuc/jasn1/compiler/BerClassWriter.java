@@ -462,7 +462,7 @@ public class BerClassWriter {
         write("this.seqOf = seqOf;");
         write("}\n");
 
-        writeSequenceOfEncodeFunction();
+        writeSequenceOfEncodeFunction(subElementRef instanceof AsnChoice);
 
         writeSequenceOfDecodeFunction(asnSequenceOf, referencedTypeName);
 
@@ -509,7 +509,10 @@ public class BerClassWriter {
         write("}\n");
 
         write("BerLength length = new BerLength();");
+        write("length.val = -1;");
+        write("if (explicit) {");
         write("codeLength += length.decode(is);\n");
+        write("}\n");
 
         // indefinite length
         if (supportIndefiniteLength == true) {
@@ -583,7 +586,7 @@ public class BerClassWriter {
 
     }
 
-    private void writeSequenceOfEncodeFunction() throws IOException {
+    private void writeSequenceOfEncodeFunction(boolean explicitSeqOf) throws IOException {
         write("public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {");
         write("int codeLength;\n");
 
@@ -598,10 +601,12 @@ public class BerClassWriter {
         write("codeLength = 0;");
 
         write("for (int i = (seqOf.size() - 1); i >= 0; i--) {");
-        write("codeLength += seqOf.get(i).encode(os, true);");
+        write("codeLength += seqOf.get(i).encode(os, "+explicitSeqOf+");");
         write("}\n");
 
+        write("if (explicit) {");
         write("codeLength += BerLength.encodeLength(os, codeLength);\n");
+        write("}\n");
 
         write("}\n");
 
@@ -1191,6 +1196,7 @@ public class BerClassWriter {
                     // TODO: maybe not only AsnSequenceOf must be explicit
                     if (sequenceElement.typeReference != null && sequenceElement.typeReference instanceof AsnSequenceOf) {
                         sequenceElement.tagType = "EXPLICIT";
+//                        sequenceElement.tagType = "IMPLICIT";
                     }
                     else {
                         sequenceElement.tagType = "IMPLICIT";
@@ -1332,7 +1338,7 @@ public class BerClassWriter {
         } else if (asnType instanceof AsnTaggedType) {
             AsnTaggedType asnTaggedType = (AsnTaggedType) asnType;
 
-            if (isExplicit(asnTaggedType.tagType)) {
+            if (isExplicit(asnTaggedType)) {
                 return false;
             }
 
@@ -1447,12 +1453,13 @@ public class BerClassWriter {
         }
 
         // TODO make this part of the is a directchoice function:
+        // choices must be explicitly tagged
         if ((!taggedType.typeName.isEmpty() && isADirectChoice(taggedType.typeName))
                 || ((taggedType.typeReference != null) && (taggedType.typeReference instanceof AsnChoice))) {
             return true;
         }
 
-        return isExplicit(taggedType.tagType);
+        return isExplicit(taggedType);
 
     }
 
@@ -1465,15 +1472,19 @@ public class BerClassWriter {
 
     }
 
-    private boolean isExplicit(String tagType) {
-        if (tagType.isEmpty()) {
-            return isDefaultTagExplicit;
-        } else if (tagType.equals("IMPLICIT")) {
+    private boolean isExplicit(AsnTaggedType taggedType) {
+        if (taggedType.tagType.isEmpty()) {
+            // automatic tags are using implicit tagging
+            if (automaticTags) {
+                return false;
+            }
+            return isDefaultTagExplicit && !automaticTags;
+        } else if (taggedType.tagType.equals("IMPLICIT")) {
             return false;
-        } else if (tagType.equals("EXPLICIT")) {
+        } else if (taggedType.tagType.equals("EXPLICIT")) {
             return true;
         } else {
-            throw new IllegalStateException("unexpected tag type: " + tagType);
+            throw new IllegalStateException("unexpected tag type: " + taggedType.tagType);
         }
 
     }

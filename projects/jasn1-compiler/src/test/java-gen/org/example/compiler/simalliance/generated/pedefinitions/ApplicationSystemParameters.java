@@ -77,95 +77,73 @@ public class ApplicationSystemParameters {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			if (userInteractionContactlessParameters != null) {
-				sublength = userInteractionContactlessParameters.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 26}
-				os.write(0xfa);
+				codeLength += userInteractionContactlessParameters.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 26}
+				os.write(0xda);
 				codeLength += 1;
 			}
 			
 			if (contactlessProtocolParameters != null) {
-				sublength = contactlessProtocolParameters.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 25}
-				os.write(0xf9);
+				codeLength += contactlessProtocolParameters.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 25}
+				os.write(0xd9);
 				codeLength += 1;
 			}
 			
 			if (ts102226AdditionalContactlessParameters != null) {
-				sublength = ts102226AdditionalContactlessParameters.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
+				codeLength += ts102226AdditionalContactlessParameters.encode(os, false);
 				// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
 				os.write(0xa0);
 				codeLength += 1;
 			}
 			
 			if (ts102226SIMFileAccessToolkitParameter != null) {
-				sublength = ts102226SIMFileAccessToolkitParameter.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 10}
-				os.write(0xea);
+				codeLength += ts102226SIMFileAccessToolkitParameter.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 10}
+				os.write(0xca);
 				codeLength += 1;
 			}
 			
 			if (nonVolatileReservedMemory != null) {
-				sublength = nonVolatileReservedMemory.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 24}
-				os.write(0xf8);
+				codeLength += nonVolatileReservedMemory.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 24}
+				os.write(0xd8);
 				codeLength += 1;
 			}
 			
 			if (volatileReservedMemory != null) {
-				sublength = volatileReservedMemory.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 23}
-				os.write(0xf7);
+				codeLength += volatileReservedMemory.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 23}
+				os.write(0xd7);
 				codeLength += 1;
 			}
 			
 			if (implicitSelectionParameter != null) {
-				sublength = implicitSelectionParameter.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 15}
-				os.write(0xef);
+				codeLength += implicitSelectionParameter.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 15}
+				os.write(0xcf);
 				codeLength += 1;
 			}
 			
 			if (globalServiceParameters != null) {
-				sublength = globalServiceParameters.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 11}
-				os.write(0xeb);
+				codeLength += globalServiceParameters.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 11}
+				os.write(0xcb);
 				codeLength += 1;
 			}
 			
 			if (nonVolatileMemoryQuotaC8 != null) {
-				sublength = nonVolatileMemoryQuotaC8.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 8}
-				os.write(0xe8);
+				codeLength += nonVolatileMemoryQuotaC8.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 8}
+				os.write(0xc8);
 				codeLength += 1;
 			}
 			
 			if (volatileMemoryQuotaC7 != null) {
-				sublength = volatileMemoryQuotaC7.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 7}
-				os.write(0xe7);
+				codeLength += volatileMemoryQuotaC7.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 7}
+				os.write(0xc7);
 				codeLength += 1;
 			}
 			
@@ -208,11 +186,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 				volatileMemoryQuotaC7 = new BerOctetString();
-				volatileMemoryQuotaC7.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7);
-				subCodeLength += volatileMemoryQuotaC7.decode(is, true);
+				volatileMemoryQuotaC7.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7);
+				subCodeLength += volatileMemoryQuotaC7.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -226,11 +203,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 				nonVolatileMemoryQuotaC8 = new BerOctetString();
-				nonVolatileMemoryQuotaC8.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 8);
-				subCodeLength += nonVolatileMemoryQuotaC8.decode(is, true);
+				nonVolatileMemoryQuotaC8.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8);
+				subCodeLength += nonVolatileMemoryQuotaC8.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -244,11 +220,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 11)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 				globalServiceParameters = new BerOctetString();
-				globalServiceParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 11);
-				subCodeLength += globalServiceParameters.decode(is, true);
+				globalServiceParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 11);
+				subCodeLength += globalServiceParameters.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -262,11 +237,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				implicitSelectionParameter = new BerOctetString();
-				implicitSelectionParameter.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += implicitSelectionParameter.decode(is, true);
+				implicitSelectionParameter.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += implicitSelectionParameter.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -280,11 +254,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 23)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 23)) {
 				volatileReservedMemory = new BerOctetString();
-				volatileReservedMemory.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 23);
-				subCodeLength += volatileReservedMemory.decode(is, true);
+				volatileReservedMemory.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 23);
+				subCodeLength += volatileReservedMemory.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -298,11 +271,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 24)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 24)) {
 				nonVolatileReservedMemory = new BerOctetString();
-				nonVolatileReservedMemory.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 24);
-				subCodeLength += nonVolatileReservedMemory.decode(is, true);
+				nonVolatileReservedMemory.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 24);
+				subCodeLength += nonVolatileReservedMemory.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -316,11 +288,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 				ts102226SIMFileAccessToolkitParameter = new BerOctetString();
-				ts102226SIMFileAccessToolkitParameter.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 10);
-				subCodeLength += ts102226SIMFileAccessToolkitParameter.decode(is, true);
+				ts102226SIMFileAccessToolkitParameter.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 10);
+				subCodeLength += ts102226SIMFileAccessToolkitParameter.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -335,10 +306,9 @@ public class ApplicationSystemParameters {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				subCodeLength += new BerLength().decode(is);
 				ts102226AdditionalContactlessParameters = new TS102226AdditionalContactlessParameters();
 				ts102226AdditionalContactlessParameters.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0);
-				subCodeLength += ts102226AdditionalContactlessParameters.decode(is, true);
+				subCodeLength += ts102226AdditionalContactlessParameters.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -352,11 +322,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 25)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 25)) {
 				contactlessProtocolParameters = new BerOctetString();
-				contactlessProtocolParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 25);
-				subCodeLength += contactlessProtocolParameters.decode(is, true);
+				contactlessProtocolParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 25);
+				subCodeLength += contactlessProtocolParameters.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -370,11 +339,10 @@ public class ApplicationSystemParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 26)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 26)) {
 				userInteractionContactlessParameters = new BerOctetString();
-				userInteractionContactlessParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 26);
-				subCodeLength += userInteractionContactlessParameters.decode(is, true);
+				userInteractionContactlessParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 26);
+				subCodeLength += userInteractionContactlessParameters.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			int nextByte = is.read();
@@ -393,70 +361,63 @@ public class ApplicationSystemParameters {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 			volatileMemoryQuotaC7 = new BerOctetString();
-			subCodeLength += volatileMemoryQuotaC7.decode(is, true);
+			subCodeLength += volatileMemoryQuotaC7.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 			nonVolatileMemoryQuotaC8 = new BerOctetString();
-			subCodeLength += nonVolatileMemoryQuotaC8.decode(is, true);
+			subCodeLength += nonVolatileMemoryQuotaC8.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 11)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 			globalServiceParameters = new BerOctetString();
-			subCodeLength += globalServiceParameters.decode(is, true);
+			subCodeLength += globalServiceParameters.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			implicitSelectionParameter = new BerOctetString();
-			subCodeLength += implicitSelectionParameter.decode(is, true);
+			subCodeLength += implicitSelectionParameter.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 23)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 23)) {
 			volatileReservedMemory = new BerOctetString();
-			subCodeLength += volatileReservedMemory.decode(is, true);
+			subCodeLength += volatileReservedMemory.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 24)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 24)) {
 			nonVolatileReservedMemory = new BerOctetString();
-			subCodeLength += nonVolatileReservedMemory.decode(is, true);
+			subCodeLength += nonVolatileReservedMemory.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 			ts102226SIMFileAccessToolkitParameter = new BerOctetString();
-			subCodeLength += ts102226SIMFileAccessToolkitParameter.decode(is, true);
+			subCodeLength += ts102226SIMFileAccessToolkitParameter.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
@@ -464,29 +425,26 @@ public class ApplicationSystemParameters {
 		}
 		
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			subCodeLength += new BerLength().decode(is);
 			ts102226AdditionalContactlessParameters = new TS102226AdditionalContactlessParameters();
-			subCodeLength += ts102226AdditionalContactlessParameters.decode(is, true);
+			subCodeLength += ts102226AdditionalContactlessParameters.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 25)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 25)) {
 			contactlessProtocolParameters = new BerOctetString();
-			subCodeLength += contactlessProtocolParameters.decode(is, true);
+			subCodeLength += contactlessProtocolParameters.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 26)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 26)) {
 			userInteractionContactlessParameters = new BerOctetString();
-			subCodeLength += userInteractionContactlessParameters.decode(is, true);
+			subCodeLength += userInteractionContactlessParameters.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}

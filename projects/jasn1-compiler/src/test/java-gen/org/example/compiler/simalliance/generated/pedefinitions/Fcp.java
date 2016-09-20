@@ -77,95 +77,73 @@ public class Fcp {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			if (linkPath != null) {
-				sublength = linkPath.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 7}
-				os.write(0xe7);
+				codeLength += linkPath.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 7}
+				os.write(0xc7);
 				codeLength += 1;
 			}
 			
 			if (proprietaryEFInfo != null) {
-				sublength = proprietaryEFInfo.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
+				codeLength += proprietaryEFInfo.encode(os, false);
 				// write tag {CONTEXT_CLASS, CONSTRUCTED, 5}
 				os.write(0xa5);
 				codeLength += 1;
 			}
 			
 			if (shortEFID != null) {
-				sublength = shortEFID.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 8}
-				os.write(0xa8);
+				codeLength += shortEFID.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 8}
+				os.write(0x88);
 				codeLength += 1;
 			}
 			
 			if (pinStatusTemplateDO != null) {
-				sublength = pinStatusTemplateDO.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 6}
-				os.write(0xe6);
+				codeLength += pinStatusTemplateDO.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 6}
+				os.write(0xc6);
 				codeLength += 1;
 			}
 			
 			if (efFileSize != null) {
-				sublength = efFileSize.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
-				os.write(0xa0);
+				codeLength += efFileSize.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 0}
+				os.write(0x80);
 				codeLength += 1;
 			}
 			
 			if (securityAttributesReferenced != null) {
-				sublength = securityAttributesReferenced.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 11}
-				os.write(0xab);
+				codeLength += securityAttributesReferenced.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 11}
+				os.write(0x8b);
 				codeLength += 1;
 			}
 			
 			if (lcsi != null) {
-				sublength = lcsi.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 10}
-				os.write(0xaa);
+				codeLength += lcsi.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 10}
+				os.write(0x8a);
 				codeLength += 1;
 			}
 			
 			if (dfName != null) {
-				sublength = dfName.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 4}
-				os.write(0xa4);
+				codeLength += dfName.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 4}
+				os.write(0x84);
 				codeLength += 1;
 			}
 			
 			if (fileID != null) {
-				sublength = fileID.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 3}
-				os.write(0xa3);
+				codeLength += fileID.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 3}
+				os.write(0x83);
 				codeLength += 1;
 			}
 			
 			if (fileDescriptor != null) {
-				sublength = fileDescriptor.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 2}
-				os.write(0xa2);
+				codeLength += fileDescriptor.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 2}
+				os.write(0x82);
 				codeLength += 1;
 			}
 			
@@ -208,11 +186,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				fileDescriptor = new BerOctetString();
-				fileDescriptor.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2);
-				subCodeLength += fileDescriptor.decode(is, true);
+				fileDescriptor.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2);
+				subCodeLength += fileDescriptor.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -226,11 +203,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 				fileID = new BerOctetString();
-				fileID.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3);
-				subCodeLength += fileID.decode(is, true);
+				fileID.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3);
+				subCodeLength += fileID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -244,11 +220,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 4)) {
 				dfName = new ApplicationIdentifier();
-				dfName.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4);
-				subCodeLength += dfName.decode(is, true);
+				dfName.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 4);
+				subCodeLength += dfName.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -262,11 +237,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 				lcsi = new BerOctetString();
-				lcsi.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 10);
-				subCodeLength += lcsi.decode(is, true);
+				lcsi.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 10);
+				subCodeLength += lcsi.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -280,11 +254,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 11)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 				securityAttributesReferenced = new BerOctetString();
-				securityAttributesReferenced.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 11);
-				subCodeLength += securityAttributesReferenced.decode(is, true);
+				securityAttributesReferenced.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 11);
+				subCodeLength += securityAttributesReferenced.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -298,11 +271,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				efFileSize = new BerOctetString();
-				efFileSize.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0);
-				subCodeLength += efFileSize.decode(is, true);
+				efFileSize.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0);
+				subCodeLength += efFileSize.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -316,11 +288,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 				pinStatusTemplateDO = new BerOctetString();
-				pinStatusTemplateDO.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 6);
-				subCodeLength += pinStatusTemplateDO.decode(is, true);
+				pinStatusTemplateDO.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6);
+				subCodeLength += pinStatusTemplateDO.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -334,11 +305,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 				shortEFID = new BerOctetString();
-				shortEFID.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8);
-				subCodeLength += shortEFID.decode(is, true);
+				shortEFID.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8);
+				subCodeLength += shortEFID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -353,10 +323,9 @@ public class Fcp {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
-				subCodeLength += new BerLength().decode(is);
 				proprietaryEFInfo = new ProprietaryInfo();
 				proprietaryEFInfo.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5);
-				subCodeLength += proprietaryEFInfo.decode(is, true);
+				subCodeLength += proprietaryEFInfo.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -370,11 +339,10 @@ public class Fcp {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 				linkPath = new BerOctetString();
-				linkPath.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7);
-				subCodeLength += linkPath.decode(is, true);
+				linkPath.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7);
+				subCodeLength += linkPath.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			int nextByte = is.read();
@@ -393,80 +361,72 @@ public class Fcp {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			fileDescriptor = new BerOctetString();
-			subCodeLength += fileDescriptor.decode(is, true);
+			subCodeLength += fileDescriptor.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 			fileID = new BerOctetString();
-			subCodeLength += fileID.decode(is, true);
+			subCodeLength += fileID.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 4)) {
 			dfName = new ApplicationIdentifier();
-			subCodeLength += dfName.decode(is, true);
+			subCodeLength += dfName.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 			lcsi = new BerOctetString();
-			subCodeLength += lcsi.decode(is, true);
+			subCodeLength += lcsi.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 11)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 			securityAttributesReferenced = new BerOctetString();
-			subCodeLength += securityAttributesReferenced.decode(is, true);
+			subCodeLength += securityAttributesReferenced.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 			efFileSize = new BerOctetString();
-			subCodeLength += efFileSize.decode(is, true);
+			subCodeLength += efFileSize.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 			pinStatusTemplateDO = new BerOctetString();
-			subCodeLength += pinStatusTemplateDO.decode(is, true);
+			subCodeLength += pinStatusTemplateDO.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 			shortEFID = new BerOctetString();
-			subCodeLength += shortEFID.decode(is, true);
+			subCodeLength += shortEFID.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
@@ -474,19 +434,17 @@ public class Fcp {
 		}
 		
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
-			subCodeLength += new BerLength().decode(is);
 			proprietaryEFInfo = new ProprietaryInfo();
-			subCodeLength += proprietaryEFInfo.decode(is, true);
+			subCodeLength += proprietaryEFInfo.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 			linkPath = new BerOctetString();
-			subCodeLength += linkPath.decode(is, true);
+			subCodeLength += linkPath.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}

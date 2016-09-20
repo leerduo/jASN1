@@ -53,10 +53,13 @@ public class ApplicationInstance {
 			else {
 				codeLength = 0;
 				for (int i = (seqOf.size() - 1); i >= 0; i--) {
-					codeLength += seqOf.get(i).encode(os, true);
+					codeLength += seqOf.get(i).encode(os, false);
 				}
 
-				codeLength += BerLength.encodeLength(os, codeLength);
+				if (explicit) {
+					codeLength += BerLength.encodeLength(os, codeLength);
+
+				}
 
 			}
 
@@ -75,7 +78,11 @@ public class ApplicationInstance {
 			}
 
 			BerLength length = new BerLength();
-			codeLength += length.decode(is);
+			length.val = -1;
+			if (explicit) {
+				codeLength += length.decode(is);
+
+			}
 
 			if (length.val == -1) {
 				BerIdentifier berIdentifier = new BerIdentifier();
@@ -201,81 +208,61 @@ public class ApplicationInstance {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			if (processData != null) {
 				codeLength += processData.encode(os, true);
 			}
 			
 			if (applicationParameters != null) {
-				sublength = applicationParameters.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
+				codeLength += applicationParameters.encode(os, false);
 				// write tag {PRIVATE_CLASS, CONSTRUCTED, 10}
 				os.write(0xea);
 				codeLength += 1;
 			}
 			
 			if (systemSpecificParameters != null) {
-				sublength = systemSpecificParameters.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
+				codeLength += systemSpecificParameters.encode(os, false);
 				// write tag {PRIVATE_CLASS, CONSTRUCTED, 15}
 				os.write(0xef);
 				codeLength += 1;
 			}
 			
-			sublength = applicationSpecificParametersC9.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {PRIVATE_CLASS, CONSTRUCTED, 9}
-			os.write(0xe9);
+			codeLength += applicationSpecificParametersC9.encode(os, false);
+			// write tag {PRIVATE_CLASS, PRIMITIVE, 9}
+			os.write(0xc9);
 			codeLength += 1;
 			
 			if (lifeCycleState != null) {
-				sublength = lifeCycleState.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 3}
-				os.write(0xa3);
+				codeLength += lifeCycleState.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 3}
+				os.write(0x83);
 				codeLength += 1;
 			}
 			
-			sublength = applicationPrivileges.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {CONTEXT_CLASS, CONSTRUCTED, 2}
-			os.write(0xa2);
+			codeLength += applicationPrivileges.encode(os, false);
+			// write tag {CONTEXT_CLASS, PRIMITIVE, 2}
+			os.write(0x82);
 			codeLength += 1;
 			
 			if (extraditeSecurityDomainAID != null) {
-				sublength = extraditeSecurityDomainAID.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-				os.write(0x6f);
+				codeLength += extraditeSecurityDomainAID.encode(os, false);
+				// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+				os.write(0x4f);
 				codeLength += 1;
 			}
 			
-			sublength = instanceAID.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-			os.write(0x6f);
+			codeLength += instanceAID.encode(os, false);
+			// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+			os.write(0x4f);
 			codeLength += 1;
 			
-			sublength = classAID.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-			os.write(0x6f);
+			codeLength += classAID.encode(os, false);
+			// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+			os.write(0x4f);
 			codeLength += 1;
 			
-			sublength = applicationLoadPackageAID.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-			os.write(0x6f);
+			codeLength += applicationLoadPackageAID.encode(os, false);
+			// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+			os.write(0x4f);
 			codeLength += 1;
 			
 			codeLength += BerLength.encodeLength(os, codeLength);
@@ -317,11 +304,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				applicationLoadPackageAID = new ApplicationIdentifier();
-				applicationLoadPackageAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += applicationLoadPackageAID.decode(is, true);
+				applicationLoadPackageAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += applicationLoadPackageAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -338,11 +324,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				classAID = new ApplicationIdentifier();
-				classAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += classAID.decode(is, true);
+				classAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += classAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -359,11 +344,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				instanceAID = new ApplicationIdentifier();
-				instanceAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += instanceAID.decode(is, true);
+				instanceAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += instanceAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -380,11 +364,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				extraditeSecurityDomainAID = new ApplicationIdentifier();
-				extraditeSecurityDomainAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += extraditeSecurityDomainAID.decode(is, true);
+				extraditeSecurityDomainAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += extraditeSecurityDomainAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -398,11 +381,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				applicationPrivileges = new BerOctetString();
-				applicationPrivileges.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2);
-				subCodeLength += applicationPrivileges.decode(is, true);
+				applicationPrivileges.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2);
+				subCodeLength += applicationPrivileges.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -419,11 +401,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 				lifeCycleState = new BerOctetString();
-				lifeCycleState.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3);
-				subCodeLength += lifeCycleState.decode(is, true);
+				lifeCycleState.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3);
+				subCodeLength += lifeCycleState.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -437,11 +418,10 @@ public class ApplicationInstance {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 9)) {
 				applicationSpecificParametersC9 = new BerOctetString();
-				applicationSpecificParametersC9.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 9);
-				subCodeLength += applicationSpecificParametersC9.decode(is, true);
+				applicationSpecificParametersC9.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 9);
+				subCodeLength += applicationSpecificParametersC9.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -459,10 +439,9 @@ public class ApplicationInstance {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
 				systemSpecificParameters = new ApplicationSystemParameters();
 				systemSpecificParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += systemSpecificParameters.decode(is, true);
+				subCodeLength += systemSpecificParameters.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -477,10 +456,9 @@ public class ApplicationInstance {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
-				subCodeLength += new BerLength().decode(is);
 				applicationParameters = new UICCApplicationParameters();
 				applicationParameters.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 10);
-				subCodeLength += applicationParameters.decode(is, true);
+				subCodeLength += applicationParameters.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -512,64 +490,57 @@ public class ApplicationInstance {
 		}
 
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			applicationLoadPackageAID = new ApplicationIdentifier();
-			subCodeLength += applicationLoadPackageAID.decode(is, true);
+			subCodeLength += applicationLoadPackageAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			classAID = new ApplicationIdentifier();
-			subCodeLength += classAID.decode(is, true);
+			subCodeLength += classAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			instanceAID = new ApplicationIdentifier();
-			subCodeLength += instanceAID.decode(is, true);
+			subCodeLength += instanceAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			extraditeSecurityDomainAID = new ApplicationIdentifier();
-			subCodeLength += extraditeSecurityDomainAID.decode(is, true);
+			subCodeLength += extraditeSecurityDomainAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			applicationPrivileges = new BerOctetString();
-			subCodeLength += applicationPrivileges.decode(is, true);
+			subCodeLength += applicationPrivileges.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 			lifeCycleState = new BerOctetString();
-			subCodeLength += lifeCycleState.decode(is, true);
+			subCodeLength += lifeCycleState.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 9)) {
 			applicationSpecificParametersC9 = new BerOctetString();
-			subCodeLength += applicationSpecificParametersC9.decode(is, true);
+			subCodeLength += applicationSpecificParametersC9.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
@@ -580,9 +551,8 @@ public class ApplicationInstance {
 		}
 		
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
 			systemSpecificParameters = new ApplicationSystemParameters();
-			subCodeLength += systemSpecificParameters.decode(is, true);
+			subCodeLength += systemSpecificParameters.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
@@ -590,9 +560,8 @@ public class ApplicationInstance {
 		}
 		
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
-			subCodeLength += new BerLength().decode(is);
 			applicationParameters = new UICCApplicationParameters();
-			subCodeLength += applicationParameters.decode(is, true);
+			subCodeLength += applicationParameters.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}

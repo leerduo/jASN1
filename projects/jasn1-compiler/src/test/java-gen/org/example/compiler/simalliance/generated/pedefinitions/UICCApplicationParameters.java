@@ -56,32 +56,24 @@ public class UICCApplicationParameters {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			if (uiccAdministrativeAccessApplicationSpecificParametersField != null) {
-				sublength = uiccAdministrativeAccessApplicationSpecificParametersField.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 2}
-				os.write(0xa2);
+				codeLength += uiccAdministrativeAccessApplicationSpecificParametersField.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 2}
+				os.write(0x82);
 				codeLength += 1;
 			}
 			
 			if (uiccAccessApplicationSpecificParametersField != null) {
-				sublength = uiccAccessApplicationSpecificParametersField.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 1}
-				os.write(0xa1);
+				codeLength += uiccAccessApplicationSpecificParametersField.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 1}
+				os.write(0x81);
 				codeLength += 1;
 			}
 			
 			if (uiccToolkitApplicationSpecificParametersField != null) {
-				sublength = uiccToolkitApplicationSpecificParametersField.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
-				os.write(0xa0);
+				codeLength += uiccToolkitApplicationSpecificParametersField.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 0}
+				os.write(0x80);
 				codeLength += 1;
 			}
 			
@@ -124,11 +116,10 @@ public class UICCApplicationParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				uiccToolkitApplicationSpecificParametersField = new BerOctetString();
-				uiccToolkitApplicationSpecificParametersField.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0);
-				subCodeLength += uiccToolkitApplicationSpecificParametersField.decode(is, true);
+				uiccToolkitApplicationSpecificParametersField.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0);
+				subCodeLength += uiccToolkitApplicationSpecificParametersField.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -142,11 +133,10 @@ public class UICCApplicationParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				uiccAccessApplicationSpecificParametersField = new BerOctetString();
-				uiccAccessApplicationSpecificParametersField.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1);
-				subCodeLength += uiccAccessApplicationSpecificParametersField.decode(is, true);
+				uiccAccessApplicationSpecificParametersField.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1);
+				subCodeLength += uiccAccessApplicationSpecificParametersField.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -160,11 +150,10 @@ public class UICCApplicationParameters {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				uiccAdministrativeAccessApplicationSpecificParametersField = new BerOctetString();
-				uiccAdministrativeAccessApplicationSpecificParametersField.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2);
-				subCodeLength += uiccAdministrativeAccessApplicationSpecificParametersField.decode(is, true);
+				uiccAdministrativeAccessApplicationSpecificParametersField.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2);
+				subCodeLength += uiccAdministrativeAccessApplicationSpecificParametersField.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			int nextByte = is.read();
@@ -183,30 +172,27 @@ public class UICCApplicationParameters {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 			uiccToolkitApplicationSpecificParametersField = new BerOctetString();
-			subCodeLength += uiccToolkitApplicationSpecificParametersField.decode(is, true);
+			subCodeLength += uiccToolkitApplicationSpecificParametersField.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			uiccAccessApplicationSpecificParametersField = new BerOctetString();
-			subCodeLength += uiccAccessApplicationSpecificParametersField.decode(is, true);
+			subCodeLength += uiccAccessApplicationSpecificParametersField.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			uiccAdministrativeAccessApplicationSpecificParametersField = new BerOctetString();
-			subCodeLength += uiccAdministrativeAccessApplicationSpecificParametersField.decode(is, true);
+			subCodeLength += uiccAdministrativeAccessApplicationSpecificParametersField.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}

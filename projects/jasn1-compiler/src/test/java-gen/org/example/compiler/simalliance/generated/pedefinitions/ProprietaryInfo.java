@@ -56,32 +56,24 @@ public class ProprietaryInfo {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			if (repeatPattern != null) {
-				sublength = repeatPattern.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 2}
-				os.write(0xe2);
+				codeLength += repeatPattern.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 2}
+				os.write(0xc2);
 				codeLength += 1;
 			}
 			
 			if (fillPattern != null) {
-				sublength = fillPattern.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 1}
-				os.write(0xe1);
+				codeLength += fillPattern.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 1}
+				os.write(0xc1);
 				codeLength += 1;
 			}
 			
 			if (specialFileInformation != null) {
-				sublength = specialFileInformation.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 0}
-				os.write(0xe0);
+				codeLength += specialFileInformation.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 0}
+				os.write(0xc0);
 				codeLength += 1;
 			}
 			
@@ -124,11 +116,10 @@ public class ProprietaryInfo {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				specialFileInformation = new BerOctetString();
-				specialFileInformation.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 0);
-				subCodeLength += specialFileInformation.decode(is, true);
+				specialFileInformation.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 0);
+				subCodeLength += specialFileInformation.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -142,11 +133,10 @@ public class ProprietaryInfo {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				fillPattern = new BerOctetString();
-				fillPattern.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 1);
-				subCodeLength += fillPattern.decode(is, true);
+				fillPattern.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1);
+				subCodeLength += fillPattern.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -160,11 +150,10 @@ public class ProprietaryInfo {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				repeatPattern = new BerOctetString();
-				repeatPattern.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 2);
-				subCodeLength += repeatPattern.decode(is, true);
+				repeatPattern.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 2);
+				subCodeLength += repeatPattern.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			int nextByte = is.read();
@@ -183,30 +172,27 @@ public class ProprietaryInfo {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 			specialFileInformation = new BerOctetString();
-			subCodeLength += specialFileInformation.decode(is, true);
+			subCodeLength += specialFileInformation.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			fillPattern = new BerOctetString();
-			subCodeLength += fillPattern.decode(is, true);
+			subCodeLength += fillPattern.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			repeatPattern = new BerOctetString();
-			subCodeLength += repeatPattern.decode(is, true);
+			subCodeLength += repeatPattern.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}

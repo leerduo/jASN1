@@ -53,10 +53,13 @@ public class PE_GenericFileManagement {
 			else {
 				codeLength = 0;
 				for (int i = (seqOf.size() - 1); i >= 0; i--) {
-					codeLength += seqOf.get(i).encode(os, true);
+					codeLength += seqOf.get(i).encode(os, false);
 				}
 
-				codeLength += BerLength.encodeLength(os, codeLength);
+				if (explicit) {
+					codeLength += BerLength.encodeLength(os, codeLength);
+
+				}
 
 			}
 
@@ -75,7 +78,11 @@ public class PE_GenericFileManagement {
 			}
 
 			BerLength length = new BerLength();
-			codeLength += length.decode(is);
+			length.val = -1;
+			if (explicit) {
+				codeLength += length.decode(is);
+
+			}
 
 			if (length.val == -1) {
 				BerIdentifier berIdentifier = new BerIdentifier();

@@ -155,13 +155,13 @@ public class SomeExamplesCompilingTest {
 
 
                 ));
-        BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
+        BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(600, true);
         genericFileManagementProfileElement.encode(berByteArrayOutputStream, false);
         byte[] code = berByteArrayOutputStream.getArray();
         System.out.println(Hex.encodeHexString(code));
         ProfileElement rereadProfileElement = new ProfileElement();
         rereadProfileElement.decode(new ByteArrayInputStream(code), null);
-        BerByteArrayOutputStream berByteArrayOutputStream2 = new BerByteArrayOutputStream(2048, true);
+        BerByteArrayOutputStream berByteArrayOutputStream2 = new BerByteArrayOutputStream(600, true);
         rereadProfileElement.encode(berByteArrayOutputStream2, false);
         byte[] code2 = berByteArrayOutputStream2.getArray();
         assertEquals(Hex.encodeHexString(code), Hex.encodeHexString(code2));
@@ -189,6 +189,9 @@ public class SomeExamplesCompilingTest {
      * @return byte array of length 2.
      */
     public static byte[] unsignedShortToByteArray(int num) {
+        if (num < 128) {
+            return new byte[]{(byte) num};
+        }
         byte hiByte = (byte) ((num & 0xFF00) >> 8);
         byte loByte = (byte) (num - (hiByte << 8));
         return new byte[]{hiByte, loByte};
@@ -211,10 +214,24 @@ public class SomeExamplesCompilingTest {
     private static FileManagement createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
                                            Short shortEfId, String linkPath, String fillFileContent, Integer fillFileOffset) {
         try {
-            return new FileManagement(Arrays.asList(new FileManagement.SubChoice(null,
-                    createFcp(fileId, fileDescriptor, arrReference, efFileSize, null, shortEfId, linkPath),
-                    fillFileOffset != null ? new UInt16(fillFileOffset) : null,
-                    fillFileContent != null ? new BerOctetString(Hex.decodeHex(fillFileContent.toCharArray())) : null)));
+            List<FileManagement.SubChoice> fileManagementSubChoices = new ArrayList<>();
+            fileManagementSubChoices.add(
+                    new FileManagement.SubChoice(null,
+                            createFcp(fileId, fileDescriptor, arrReference, efFileSize, null, shortEfId, linkPath), null, null)
+            );
+            if (fillFileOffset != null) {
+                fileManagementSubChoices.add(new FileManagement.SubChoice(null, null,
+                        new UInt16(fillFileOffset),
+                        null)
+                );
+            }
+            if (fillFileContent != null) {
+                fileManagementSubChoices.add(new FileManagement.SubChoice(null, null,
+                                null,
+                                new BerOctetString(Hex.decodeHex(fillFileContent.toCharArray())))
+                );
+            }
+            return new FileManagement(fileManagementSubChoices);
         } catch (DecoderException e) {
             throw new RuntimeException("Could not decode file content.", e);
         }
@@ -227,9 +244,16 @@ public class SomeExamplesCompilingTest {
         if (fillFileRecordContents != null) {
             fillFileRecordContents.stream().forEach(rfc -> {
                 try {
-                    fileManagement.seqOf.add(new FileManagement.SubChoice(null, null,
-                            rfc.fillFileOffset != null ? new UInt16(rfc.fillFileOffset) : null,
-                            new BerOctetString(Hex.decodeHex(rfc.fillFileContent.toCharArray()))));
+                    if (rfc.fillFileOffset != null) {
+                        fileManagement.seqOf.add(new FileManagement.SubChoice(null, null,
+                                rfc.fillFileOffset != null ? new UInt16(rfc.fillFileOffset) : null,
+                                null));
+                    }
+                    if (rfc.fillFileContent != null) {
+                        fileManagement.seqOf.add(new FileManagement.SubChoice(null, null,
+                                null,
+                                new BerOctetString(Hex.decodeHex(rfc.fillFileContent.toCharArray()))));
+                    }
                 } catch (DecoderException e) {
                     throw new RuntimeException("Could not decode file record content.", e);
                 }
@@ -253,7 +277,7 @@ public class SomeExamplesCompilingTest {
                     null, null, new BerOctetString(new byte[]{arrReference}),
                     efFileSize != null ? new BerOctetString(unsignedShortToByteArray(efFileSize)) : null,
                     pinStatusTemplateDo != null ? new BerOctetString(Hex.decodeHex(pinStatusTemplateDo.toCharArray())) : null,
-                    shortEfId != null ? new BerOctetString(unsignedShortToByteArray(shortEfId)) : null,
+                    shortEfId != null ? new BerOctetString(new byte[]{shortEfId.byteValue()}) : null,
                     null,
                     linkPath != null ? new BerOctetString(Hex.decodeHex(linkPath.toCharArray())) : null
             );

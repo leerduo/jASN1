@@ -68,65 +68,49 @@ public class ApplicationLoadPackage {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
-			sublength = loadBlockObject.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {PRIVATE_CLASS, CONSTRUCTED, 4}
-			os.write(0xe4);
+			codeLength += loadBlockObject.encode(os, false);
+			// write tag {PRIVATE_CLASS, PRIMITIVE, 4}
+			os.write(0xc4);
 			codeLength += 1;
 			
 			if (hashValue != null) {
-				sublength = hashValue.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 1}
-				os.write(0xe1);
+				codeLength += hashValue.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 1}
+				os.write(0xc1);
 				codeLength += 1;
 			}
 			
 			if (nonVolatileDataLimitC8 != null) {
-				sublength = nonVolatileDataLimitC8.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 8}
-				os.write(0xe8);
+				codeLength += nonVolatileDataLimitC8.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 8}
+				os.write(0xc8);
 				codeLength += 1;
 			}
 			
 			if (volatileDataLimitC7 != null) {
-				sublength = volatileDataLimitC7.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 7}
-				os.write(0xe7);
+				codeLength += volatileDataLimitC7.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 7}
+				os.write(0xc7);
 				codeLength += 1;
 			}
 			
 			if (nonVolatileCodeLimitC6 != null) {
-				sublength = nonVolatileCodeLimitC6.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {PRIVATE_CLASS, CONSTRUCTED, 6}
-				os.write(0xe6);
+				codeLength += nonVolatileCodeLimitC6.encode(os, false);
+				// write tag {PRIVATE_CLASS, PRIMITIVE, 6}
+				os.write(0xc6);
 				codeLength += 1;
 			}
 			
 			if (securityDomainAID != null) {
-				sublength = securityDomainAID.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-				os.write(0x6f);
+				codeLength += securityDomainAID.encode(os, false);
+				// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+				os.write(0x4f);
 				codeLength += 1;
 			}
 			
-			sublength = loadPackageAID.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-			os.write(0x6f);
+			codeLength += loadPackageAID.encode(os, false);
+			// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+			os.write(0x4f);
 			codeLength += 1;
 			
 			codeLength += BerLength.encodeLength(os, codeLength);
@@ -168,11 +152,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				loadPackageAID = new ApplicationIdentifier();
-				loadPackageAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += loadPackageAID.decode(is, true);
+				loadPackageAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += loadPackageAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -189,11 +172,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				securityDomainAID = new ApplicationIdentifier();
-				securityDomainAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += securityDomainAID.decode(is, true);
+				securityDomainAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += securityDomainAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -207,11 +189,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 				nonVolatileCodeLimitC6 = new BerOctetString();
-				nonVolatileCodeLimitC6.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 6);
-				subCodeLength += nonVolatileCodeLimitC6.decode(is, true);
+				nonVolatileCodeLimitC6.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6);
+				subCodeLength += nonVolatileCodeLimitC6.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -225,11 +206,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 				volatileDataLimitC7 = new BerOctetString();
-				volatileDataLimitC7.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7);
-				subCodeLength += volatileDataLimitC7.decode(is, true);
+				volatileDataLimitC7.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7);
+				subCodeLength += volatileDataLimitC7.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -243,11 +223,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 				nonVolatileDataLimitC8 = new BerOctetString();
-				nonVolatileDataLimitC8.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 8);
-				subCodeLength += nonVolatileDataLimitC8.decode(is, true);
+				nonVolatileDataLimitC8.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8);
+				subCodeLength += nonVolatileDataLimitC8.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -261,11 +240,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				hashValue = new BerOctetString();
-				hashValue.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 1);
-				subCodeLength += hashValue.decode(is, true);
+				hashValue.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1);
+				subCodeLength += hashValue.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -279,11 +257,10 @@ public class ApplicationLoadPackage {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 4)) {
 				loadBlockObject = new BerOctetString();
-				loadBlockObject.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 4);
-				subCodeLength += loadBlockObject.decode(is, true);
+				loadBlockObject.id = new BerIdentifier(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 4);
+				subCodeLength += loadBlockObject.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -302,55 +279,48 @@ public class ApplicationLoadPackage {
 		}
 
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			loadPackageAID = new ApplicationIdentifier();
-			subCodeLength += loadPackageAID.decode(is, true);
+			subCodeLength += loadPackageAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			securityDomainAID = new ApplicationIdentifier();
-			subCodeLength += securityDomainAID.decode(is, true);
+			subCodeLength += securityDomainAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 			nonVolatileCodeLimitC6 = new BerOctetString();
-			subCodeLength += nonVolatileCodeLimitC6.decode(is, true);
+			subCodeLength += nonVolatileCodeLimitC6.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 			volatileDataLimitC7 = new BerOctetString();
-			subCodeLength += volatileDataLimitC7.decode(is, true);
+			subCodeLength += volatileDataLimitC7.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 			nonVolatileDataLimitC8 = new BerOctetString();
-			subCodeLength += nonVolatileDataLimitC8.decode(is, true);
+			subCodeLength += nonVolatileDataLimitC8.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			hashValue = new BerOctetString();
-			subCodeLength += hashValue.decode(is, true);
+			subCodeLength += hashValue.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 4)) {
 			loadBlockObject = new BerOctetString();
-			subCodeLength += loadBlockObject.decode(is, true);
+			subCodeLength += loadBlockObject.decode(is, false);
 			if (subCodeLength == length.val) {
 				return codeLength;
 			}

@@ -52,14 +52,10 @@ public class FileManagement {
 
 			}
 			int codeLength = 0;
-			int sublength;
-
 			if (fillFileContent != null) {
-				sublength = fillFileContent.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 1}
-				os.write(0xa1);
+				codeLength += fillFileContent.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 1}
+				os.write(0x81);
 				codeLength += 1;
 				return codeLength;
 
@@ -72,9 +68,7 @@ public class FileManagement {
 			}
 			
 			if (createFCP != null) {
-				sublength = createFCP.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
+				codeLength += createFCP.encode(os, false);
 				// write tag {APPLICATION_CLASS, CONSTRUCTED, 2}
 				os.write(0x62);
 				codeLength += 1;
@@ -83,11 +77,9 @@ public class FileManagement {
 			}
 			
 			if (filePath != null) {
-				sublength = filePath.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
-				os.write(0xa0);
+				codeLength += filePath.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 0}
+				os.write(0x80);
 				codeLength += 1;
 				return codeLength;
 
@@ -104,17 +96,15 @@ public class FileManagement {
 				berIdentifier = new BerIdentifier();
 				codeLength += berIdentifier.decode(is);
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				codeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				filePath = new BerOctetString();
-				codeLength += filePath.decode(is, true);
+				codeLength += filePath.decode(is, false);
 				return codeLength;
 			}
 
 			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-				codeLength += new BerLength().decode(is);
 				createFCP = new Fcp();
-				codeLength += createFCP.decode(is, true);
+				codeLength += createFCP.decode(is, false);
 				return codeLength;
 			}
 
@@ -124,10 +114,9 @@ public class FileManagement {
 				return codeLength;
 			}
 
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-				codeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				fillFileContent = new BerOctetString();
-				codeLength += fillFileContent.decode(is, true);
+				codeLength += fillFileContent.decode(is, false);
 				return codeLength;
 			}
 
@@ -201,7 +190,10 @@ public class FileManagement {
 				codeLength += seqOf.get(i).encode(os, true);
 			}
 
-			codeLength += BerLength.encodeLength(os, codeLength);
+			if (explicit) {
+				codeLength += BerLength.encodeLength(os, codeLength);
+
+			}
 
 		}
 
@@ -220,7 +212,11 @@ public class FileManagement {
 		}
 
 		BerLength length = new BerLength();
-		codeLength += length.decode(is);
+		length.val = -1;
+		if (explicit) {
+			codeLength += length.decode(is);
+
+		}
 
 		if (length.val == -1) {
 			BerIdentifier berIdentifier = new BerIdentifier();

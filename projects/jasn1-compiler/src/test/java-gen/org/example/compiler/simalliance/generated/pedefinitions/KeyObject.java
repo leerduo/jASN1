@@ -60,29 +60,21 @@ public class KeyObject {
 				}
 				else {
 					codeLength = 0;
-					int sublength;
-
 					if (macLength != null) {
-						sublength = macLength.encode(os, true);
-						codeLength += sublength;
-						codeLength += BerLength.encodeLength(os, sublength);
-						// write tag {CONTEXT_CLASS, CONSTRUCTED, 7}
-						os.write(0xa7);
+						codeLength += macLength.encode(os, false);
+						// write tag {CONTEXT_CLASS, PRIMITIVE, 7}
+						os.write(0x87);
 						codeLength += 1;
 					}
 					
-					sublength = keyData.encode(os, true);
-					codeLength += sublength;
-					codeLength += BerLength.encodeLength(os, sublength);
-					// write tag {CONTEXT_CLASS, CONSTRUCTED, 6}
-					os.write(0xa6);
+					codeLength += keyData.encode(os, false);
+					// write tag {CONTEXT_CLASS, PRIMITIVE, 6}
+					os.write(0x86);
 					codeLength += 1;
 					
-					sublength = keyType.encode(os, true);
-					codeLength += sublength;
-					codeLength += BerLength.encodeLength(os, sublength);
-					// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
-					os.write(0xa0);
+					codeLength += keyType.encode(os, false);
+					// write tag {CONTEXT_CLASS, PRIMITIVE, 0}
+					os.write(0x80);
 					codeLength += 1;
 					
 					codeLength += BerLength.encodeLength(os, codeLength);
@@ -124,11 +116,10 @@ public class KeyObject {
 						codeLength += subCodeLength + 1;
 						return codeLength;
 					}
-					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-						subCodeLength += new BerLength().decode(is);
+					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 						keyType = new BerOctetString();
-						keyType.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0);
-						subCodeLength += keyType.decode(is, true);
+						keyType.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0);
+						subCodeLength += keyType.decode(is, false);
 						subCodeLength += berIdentifier.decode(is);
 					}
 					else {
@@ -145,11 +136,10 @@ public class KeyObject {
 						codeLength += subCodeLength + 1;
 						return codeLength;
 					}
-					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
-						subCodeLength += new BerLength().decode(is);
+					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 						keyData = new BerOctetString();
-						keyData.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6);
-						subCodeLength += keyData.decode(is, true);
+						keyData.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 6);
+						subCodeLength += keyData.decode(is, false);
 						subCodeLength += berIdentifier.decode(is);
 					}
 					else {
@@ -166,11 +156,10 @@ public class KeyObject {
 						codeLength += subCodeLength + 1;
 						return codeLength;
 					}
-					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-						subCodeLength += new BerLength().decode(is);
+					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 						macLength = new UInt8();
-						macLength.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 7);
-						subCodeLength += macLength.decode(is, true);
+						macLength.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 7);
+						subCodeLength += macLength.decode(is, false);
 						subCodeLength += berIdentifier.decode(is);
 					}
 					int nextByte = is.read();
@@ -186,20 +175,18 @@ public class KeyObject {
 				}
 
 				subCodeLength += berIdentifier.decode(is);
-				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-					subCodeLength += new BerLength().decode(is);
+				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 					keyType = new BerOctetString();
-					subCodeLength += keyType.decode(is, true);
+					subCodeLength += keyType.decode(is, false);
 					subCodeLength += berIdentifier.decode(is);
 				}
 				else {
 					throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 				}
 				
-				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
-					subCodeLength += new BerLength().decode(is);
+				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 					keyData = new BerOctetString();
-					subCodeLength += keyData.decode(is, true);
+					subCodeLength += keyData.decode(is, false);
 					if (subCodeLength == length.val) {
 						return codeLength;
 					}
@@ -209,10 +196,9 @@ public class KeyObject {
 					throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 				}
 				
-				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
-					subCodeLength += new BerLength().decode(is);
+				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 					macLength = new UInt8();
-					subCodeLength += macLength.decode(is, true);
+					subCodeLength += macLength.decode(is, false);
 					if (subCodeLength == length.val) {
 						return codeLength;
 					}
@@ -279,10 +265,13 @@ public class KeyObject {
 			else {
 				codeLength = 0;
 				for (int i = (seqOf.size() - 1); i >= 0; i--) {
-					codeLength += seqOf.get(i).encode(os, true);
+					codeLength += seqOf.get(i).encode(os, false);
 				}
 
-				codeLength += BerLength.encodeLength(os, codeLength);
+				if (explicit) {
+					codeLength += BerLength.encodeLength(os, codeLength);
+
+				}
 
 			}
 
@@ -301,7 +290,11 @@ public class KeyObject {
 			}
 
 			BerLength length = new BerLength();
-			codeLength += length.decode(is);
+			length.val = -1;
+			if (explicit) {
+				codeLength += length.decode(is);
+
+			}
 
 			if (length.val == -1) {
 				BerIdentifier berIdentifier = new BerIdentifier();
@@ -415,47 +408,35 @@ public class KeyObject {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			codeLength += keyCompontents.encode(os, true);
 			
 			if (keyCounterValue != null) {
-				sublength = keyCounterValue.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 5}
-				os.write(0xa5);
+				codeLength += keyCounterValue.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 5}
+				os.write(0x85);
 				codeLength += 1;
 			}
 			
-			sublength = keyVersionNumber.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {CONTEXT_CLASS, CONSTRUCTED, 3}
-			os.write(0xa3);
+			codeLength += keyVersionNumber.encode(os, false);
+			// write tag {CONTEXT_CLASS, PRIMITIVE, 3}
+			os.write(0x83);
 			codeLength += 1;
 			
-			sublength = keyIdentifier.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {CONTEXT_CLASS, CONSTRUCTED, 2}
-			os.write(0xa2);
+			codeLength += keyIdentifier.encode(os, false);
+			// write tag {CONTEXT_CLASS, PRIMITIVE, 2}
+			os.write(0x82);
 			codeLength += 1;
 			
 			if (keyAccess != null) {
-				sublength = keyAccess.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {CONTEXT_CLASS, CONSTRUCTED, 22}
-				os.write(0xb6);
+				codeLength += keyAccess.encode(os, false);
+				// write tag {CONTEXT_CLASS, PRIMITIVE, 22}
+				os.write(0x96);
 				codeLength += 1;
 			}
 			
-			sublength = keyUsageQualifier.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {CONTEXT_CLASS, CONSTRUCTED, 21}
-			os.write(0xb5);
+			codeLength += keyUsageQualifier.encode(os, false);
+			// write tag {CONTEXT_CLASS, PRIMITIVE, 21}
+			os.write(0x95);
 			codeLength += 1;
 			
 			codeLength += BerLength.encodeLength(os, codeLength);
@@ -497,11 +478,10 @@ public class KeyObject {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 21)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 21)) {
 				keyUsageQualifier = new BerOctetString();
-				keyUsageQualifier.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 21);
-				subCodeLength += keyUsageQualifier.decode(is, true);
+				keyUsageQualifier.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 21);
+				subCodeLength += keyUsageQualifier.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -518,11 +498,10 @@ public class KeyObject {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 22)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 22)) {
 				keyAccess = new BerOctetString();
-				keyAccess.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 22);
-				subCodeLength += keyAccess.decode(is, true);
+				keyAccess.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 22);
+				subCodeLength += keyAccess.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -536,11 +515,10 @@ public class KeyObject {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				keyIdentifier = new BerOctetString();
-				keyIdentifier.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2);
-				subCodeLength += keyIdentifier.decode(is, true);
+				keyIdentifier.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2);
+				subCodeLength += keyIdentifier.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -557,11 +535,10 @@ public class KeyObject {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 				keyVersionNumber = new BerOctetString();
-				keyVersionNumber.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3);
-				subCodeLength += keyVersionNumber.decode(is, true);
+				keyVersionNumber.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3);
+				subCodeLength += keyVersionNumber.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -578,11 +555,10 @@ public class KeyObject {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 5)) {
 				keyCounterValue = new BerOctetString();
-				keyCounterValue.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5);
-				subCodeLength += keyCounterValue.decode(is, true);
+				keyCounterValue.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 5);
+				subCodeLength += keyCounterValue.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -617,47 +593,42 @@ public class KeyObject {
 		}
 
 		subCodeLength += berIdentifier.decode(is);
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 21)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 21)) {
 			keyUsageQualifier = new BerOctetString();
-			subCodeLength += keyUsageQualifier.decode(is, true);
+			subCodeLength += keyUsageQualifier.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 22)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 22)) {
 			keyAccess = new BerOctetString();
-			subCodeLength += keyAccess.decode(is, true);
+			subCodeLength += keyAccess.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			keyIdentifier = new BerOctetString();
-			subCodeLength += keyIdentifier.decode(is, true);
+			subCodeLength += keyIdentifier.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 			keyVersionNumber = new BerOctetString();
-			subCodeLength += keyVersionNumber.decode(is, true);
+			subCodeLength += keyVersionNumber.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 5)) {
 			keyCounterValue = new BerOctetString();
-			subCodeLength += keyCounterValue.decode(is, true);
+			subCodeLength += keyCounterValue.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		

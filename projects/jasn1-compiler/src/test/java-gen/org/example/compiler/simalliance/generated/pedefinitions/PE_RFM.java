@@ -53,10 +53,13 @@ public class PE_RFM {
 			else {
 				codeLength = 0;
 				for (int i = (seqOf.size() - 1); i >= 0; i--) {
-					codeLength += seqOf.get(i).encode(os, true);
+					codeLength += seqOf.get(i).encode(os, false);
 				}
 
-				codeLength += BerLength.encodeLength(os, codeLength);
+				if (explicit) {
+					codeLength += BerLength.encodeLength(os, codeLength);
+
+				}
 
 			}
 
@@ -75,7 +78,11 @@ public class PE_RFM {
 			}
 
 			BerLength length = new BerLength();
-			codeLength += length.decode(is);
+			length.val = -1;
+			if (explicit) {
+				codeLength += length.decode(is);
+
+			}
 
 			if (length.val == -1) {
 				BerIdentifier berIdentifier = new BerIdentifier();
@@ -195,8 +202,6 @@ public class PE_RFM {
 		}
 		else {
 			codeLength = 0;
-			int sublength;
-
 			if (adfRFMAccess != null) {
 				codeLength += adfRFMAccess.encode(os, true);
 			}
@@ -205,41 +210,31 @@ public class PE_RFM {
 			
 			codeLength += uiccAccessDomain.encode(os, true);
 			
-			sublength = minimumSecurityLevel.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {CONTEXT_CLASS, CONSTRUCTED, 1}
-			os.write(0xa1);
+			codeLength += minimumSecurityLevel.encode(os, false);
+			// write tag {CONTEXT_CLASS, PRIMITIVE, 1}
+			os.write(0x81);
 			codeLength += 1;
 			
 			if (tarList != null) {
-				sublength = tarList.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
+				codeLength += tarList.encode(os, false);
 				// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
 				os.write(0xa0);
 				codeLength += 1;
 			}
 			
 			if (securityDomainAID != null) {
-				sublength = securityDomainAID.encode(os, true);
-				codeLength += sublength;
-				codeLength += BerLength.encodeLength(os, sublength);
-				// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-				os.write(0x6f);
+				codeLength += securityDomainAID.encode(os, false);
+				// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+				os.write(0x4f);
 				codeLength += 1;
 			}
 			
-			sublength = instanceAID.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
-			// write tag {APPLICATION_CLASS, CONSTRUCTED, 15}
-			os.write(0x6f);
+			codeLength += instanceAID.encode(os, false);
+			// write tag {APPLICATION_CLASS, PRIMITIVE, 15}
+			os.write(0x4f);
 			codeLength += 1;
 			
-			sublength = rfm_header.encode(os, true);
-			codeLength += sublength;
-			codeLength += BerLength.encodeLength(os, sublength);
+			codeLength += rfm_header.encode(os, false);
 			// write tag {CONTEXT_CLASS, CONSTRUCTED, 0}
 			os.write(0xa0);
 			codeLength += 1;
@@ -284,10 +279,9 @@ public class PE_RFM {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				subCodeLength += new BerLength().decode(is);
 				rfm_header = new PEHeader();
 				rfm_header.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0);
-				subCodeLength += rfm_header.decode(is, true);
+				subCodeLength += rfm_header.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -304,11 +298,10 @@ public class PE_RFM {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				instanceAID = new ApplicationIdentifier();
-				instanceAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += instanceAID.decode(is, true);
+				instanceAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += instanceAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -325,11 +318,10 @@ public class PE_RFM {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 				securityDomainAID = new ApplicationIdentifier();
-				securityDomainAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15);
-				subCodeLength += securityDomainAID.decode(is, true);
+				securityDomainAID.id = new BerIdentifier(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15);
+				subCodeLength += securityDomainAID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -344,10 +336,9 @@ public class PE_RFM {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-				subCodeLength += new BerLength().decode(is);
 				tarList = new SubSeqOf_tarList();
 				tarList.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0);
-				subCodeLength += tarList.decode(is, true);
+				subCodeLength += tarList.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -361,11 +352,10 @@ public class PE_RFM {
 				codeLength += subCodeLength + 1;
 				return codeLength;
 			}
-			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-				subCodeLength += new BerLength().decode(is);
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				minimumSecurityLevel = new BerOctetString();
-				minimumSecurityLevel.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1);
-				subCodeLength += minimumSecurityLevel.decode(is, true);
+				minimumSecurityLevel.id = new BerIdentifier(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1);
+				subCodeLength += minimumSecurityLevel.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -439,43 +429,38 @@ public class PE_RFM {
 
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			subCodeLength += new BerLength().decode(is);
 			rfm_header = new PEHeader();
-			subCodeLength += rfm_header.decode(is, true);
+			subCodeLength += rfm_header.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			instanceAID = new ApplicationIdentifier();
-			subCodeLength += instanceAID.decode(is, true);
+			subCodeLength += instanceAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
 			throw new IOException("Identifier does not match the mandatory sequence element identifer.");
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			securityDomainAID = new ApplicationIdentifier();
-			subCodeLength += securityDomainAID.decode(is, true);
+			subCodeLength += securityDomainAID.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			subCodeLength += new BerLength().decode(is);
 			tarList = new SubSeqOf_tarList();
-			subCodeLength += tarList.decode(is, true);
+			subCodeLength += tarList.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
-			subCodeLength += new BerLength().decode(is);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			minimumSecurityLevel = new BerOctetString();
-			subCodeLength += minimumSecurityLevel.decode(is, true);
+			subCodeLength += minimumSecurityLevel.decode(is, false);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
