@@ -208,6 +208,10 @@ public class File {
 	}
 
 	public int decode(InputStream is, boolean explicit) throws IOException {
+		return decode(is, explicit, 0);
+	}
+
+	public int decode(InputStream is, boolean explicit, int size) throws IOException {
 		int codeLength = 0;
 		int subCodeLength = 0;
 		if (explicit) {
@@ -215,7 +219,7 @@ public class File {
 		}
 
 		BerLength length = new BerLength();
-		length.val = -1;
+		length.val = size;
 		if (explicit) {
 			codeLength += length.decode(is);
 

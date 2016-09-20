@@ -71,6 +71,10 @@ public class PE_SecurityDomain {
 		}
 
 		public int decode(InputStream is, boolean explicit) throws IOException {
+			return decode(is, explicit, 0);
+		}
+
+		public int decode(InputStream is, boolean explicit, int size) throws IOException {
 			int codeLength = 0;
 			int subCodeLength = 0;
 			if (explicit) {
@@ -78,7 +82,7 @@ public class PE_SecurityDomain {
 			}
 
 			BerLength length = new BerLength();
-			length.val = -1;
+			length.val = size;
 			if (explicit) {
 				codeLength += length.decode(is);
 
@@ -108,7 +112,7 @@ public class PE_SecurityDomain {
 			}
 			while (subCodeLength < length.val) {
 				KeyObject element = new KeyObject();
-				subCodeLength += element.decode(is, true);
+				subCodeLength += element.decode(is, false, length.val);
 				seqOf.add(element);
 			}
 			if (subCodeLength != length.val) {
@@ -202,6 +206,10 @@ public class PE_SecurityDomain {
 		}
 
 		public int decode(InputStream is, boolean explicit) throws IOException {
+			return decode(is, explicit, 0);
+		}
+
+		public int decode(InputStream is, boolean explicit, int size) throws IOException {
 			int codeLength = 0;
 			int subCodeLength = 0;
 			if (explicit) {
@@ -209,7 +217,7 @@ public class PE_SecurityDomain {
 			}
 
 			BerLength length = new BerLength();
-			length.val = -1;
+			length.val = size;
 			if (explicit) {
 				codeLength += length.decode(is);
 
@@ -239,7 +247,7 @@ public class PE_SecurityDomain {
 			}
 			while (subCodeLength < length.val) {
 				BerOctetString element = new BerOctetString();
-				subCodeLength += element.decode(is, true);
+				subCodeLength += element.decode(is, false, length.val);
 				seqOf.add(element);
 			}
 			if (subCodeLength != length.val) {

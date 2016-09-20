@@ -407,6 +407,13 @@ public class BerClassWriter {
 
     }
 
+    private boolean isExplicitSeqOf(AsnSequenceOf asnSequenceOf) {
+        // TODO: not sure if this condition is correct to use explicit tagging
+        AsnType subElementRef = (AsnType) asnSequenceOf.typeReference;
+        return subElementRef instanceof AsnConstructedType;
+    }
+
+    // handles also SetOf
     private void writeSequenceOfClass(AsnSequenceOf asnSequenceOf, String tagNum, String tagClass, String className,
                                       boolean asInternalClass) throws IOException {
 
@@ -462,9 +469,9 @@ public class BerClassWriter {
         write("this.seqOf = seqOf;");
         write("}\n");
 
-        writeSequenceOfEncodeFunction(subElementRef instanceof AsnChoice);
+        writeSequenceOfEncodeFunction(isExplicitSeqOf(asnSequenceOf));
 
-        writeSequenceOfDecodeFunction(asnSequenceOf, referencedTypeName);
+        writeSequenceOfDecodeFunction(asnSequenceOf, referencedTypeName, isExplicitSeqOf(asnSequenceOf));
 
         writeEncodeAndSaveFunction();
 
@@ -499,8 +506,12 @@ public class BerClassWriter {
 
     }
 
-    private void writeSequenceOfDecodeFunction(AsnSequenceOf element, String referencedTypeName) throws IOException {
+    private void writeSequenceOfDecodeFunction(AsnSequenceOf element, String referencedTypeName, boolean explicitSeqOf) throws IOException {
         write("public int decode(InputStream is, boolean explicit) throws IOException {");
+        write("return decode(is, explicit, 0);");
+        write("}\n");
+        // if no SequenceOf is not explicitly tagged the length must be passed
+        write("public int decode(InputStream is, boolean explicit, int size) throws IOException {");
         write("int codeLength = 0;");
         write("int subCodeLength = 0;");
 
@@ -509,7 +520,7 @@ public class BerClassWriter {
         write("}\n");
 
         write("BerLength length = new BerLength();");
-        write("length.val = -1;");
+        write("length.val = size;");
         write("if (explicit) {");
         write("codeLength += length.decode(is);\n");
         write("}\n");
@@ -572,7 +583,13 @@ public class BerClassWriter {
         if (asnType instanceof AsnChoice) {
             write("subCodeLength += element.decode(is, null);");
         } else {
-            write("subCodeLength += element.decode(is, true);");
+            // no explicit tagging is used internally size must be provided
+            if (!(element.typeReference instanceof AsnConstructedType)) {
+                write("subCodeLength += element.decode(is, false, length.val);");
+            }
+            else {
+                write("subCodeLength += element.decode(is, true);");
+            }
         }
         write("seqOf.add(element);");
         write("}");
@@ -1196,7 +1213,6 @@ public class BerClassWriter {
                     // TODO: maybe not only AsnSequenceOf must be explicit
                     if (sequenceElement.typeReference != null && sequenceElement.typeReference instanceof AsnSequenceOf) {
                         sequenceElement.tagType = "EXPLICIT";
-//                        sequenceElement.tagType = "IMPLICIT";
                     }
                     else {
                         sequenceElement.tagType = "IMPLICIT";

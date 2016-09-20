@@ -265,7 +265,7 @@ public class KeyObject {
 			else {
 				codeLength = 0;
 				for (int i = (seqOf.size() - 1); i >= 0; i--) {
-					codeLength += seqOf.get(i).encode(os, false);
+					codeLength += seqOf.get(i).encode(os, true);
 				}
 
 				if (explicit) {
@@ -283,6 +283,10 @@ public class KeyObject {
 		}
 
 		public int decode(InputStream is, boolean explicit) throws IOException {
+			return decode(is, explicit, 0);
+		}
+
+		public int decode(InputStream is, boolean explicit, int size) throws IOException {
 			int codeLength = 0;
 			int subCodeLength = 0;
 			if (explicit) {
@@ -290,7 +294,7 @@ public class KeyObject {
 			}
 
 			BerLength length = new BerLength();
-			length.val = -1;
+			length.val = size;
 			if (explicit) {
 				codeLength += length.decode(is);
 

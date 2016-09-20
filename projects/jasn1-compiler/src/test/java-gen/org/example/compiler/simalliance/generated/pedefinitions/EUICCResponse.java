@@ -71,6 +71,10 @@ public class EUICCResponse {
 		}
 
 		public int decode(InputStream is, boolean explicit) throws IOException {
+			return decode(is, explicit, 0);
+		}
+
+		public int decode(InputStream is, boolean explicit, int size) throws IOException {
 			int codeLength = 0;
 			int subCodeLength = 0;
 			if (explicit) {
@@ -78,7 +82,7 @@ public class EUICCResponse {
 			}
 
 			BerLength length = new BerLength();
-			length.val = -1;
+			length.val = size;
 			if (explicit) {
 				codeLength += length.decode(is);
 
@@ -108,7 +112,7 @@ public class EUICCResponse {
 			}
 			while (subCodeLength < length.val) {
 				PEStatus element = new PEStatus();
-				subCodeLength += element.decode(is, true);
+				subCodeLength += element.decode(is, false, length.val);
 				seqOf.add(element);
 			}
 			if (subCodeLength != length.val) {
