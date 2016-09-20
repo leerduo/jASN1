@@ -1,7 +1,7 @@
 
 project.ext {
 
-  cfgVersion = '1.5.0'
+  cfgVersion = '1.5.1-SNAPSHOT'
   
   cfgGroup = 'org.openmuc'
 
@@ -40,7 +40,10 @@ tasks.withType(Tar) {
       include 'license/**'
       include 'doc/*.txt'
       include 'doc/userguide/' + project.name + '-doc*.html'
-      include 'doc/userguide/' + project.name + '-doc_img/**'
+      include 'doc/userguide/' + project.name + '-doc-img/**'
+      include 'gradle/wrapper/**'
+      include 'gradlew'
+      include 'gradlew.bat'
 
       include 'sample/**/*.java'
       include 'sample/**/*.txt'

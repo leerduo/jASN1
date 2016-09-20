@@ -24,6 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AsnElementTypeList {
-	public List<AsnElementType> elements = new ArrayList<>();
+    public List<AsnElementType> elements = new ArrayList<>();
 
 }

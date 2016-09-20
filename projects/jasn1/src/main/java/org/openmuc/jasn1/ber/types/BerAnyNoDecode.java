@@ -28,34 +28,34 @@ import org.openmuc.jasn1.ber.BerLength;
 
 public class BerAnyNoDecode {
 
-	public int length;
+    public int length;
 
-	public BerAnyNoDecode() {
-	}
+    public BerAnyNoDecode() {
+    }
 
-	public BerAnyNoDecode(int length) {
-		this.length = length;
-	}
+    public BerAnyNoDecode(int length) {
+        this.length = length;
+    }
 
-	public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {
-		if (!explicit) {
-			return length + BerLength.encodeLength(os, length);
-		}
-		return length;
-	}
+    public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {
+        if (!explicit) {
+            return length + BerLength.encodeLength(os, length);
+        }
+        return length;
+    }
 
-	public int decode(InputStream is, boolean explicit) throws IOException {
+    public int decode(InputStream is, boolean explicit) throws IOException {
 
-		BerLength length = new BerLength();
-		int codeLength = length.decode(is);
-		this.length = length.val;
+        BerLength length = new BerLength();
+        int codeLength = length.decode(is);
+        this.length = length.val;
 
-		return codeLength + length.val;
+        return codeLength + length.val;
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		return "ANY not decoded";
-	}
+    @Override
+    public String toString() {
+        return "ANY not decoded";
+    }
 }

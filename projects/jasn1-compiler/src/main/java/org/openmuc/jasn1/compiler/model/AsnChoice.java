@@ -22,6 +22,6 @@ package org.openmuc.jasn1.compiler.model;
 
 public class AsnChoice extends AsnConstructedType {
 
-	public AsnElementTypeList elementTypeList;
+    public AsnElementTypeList elementTypeList;
 
 }

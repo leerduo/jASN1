@@ -26,26 +26,26 @@ import java.io.InputStream;
 
 class Util {
 
-	static void readFully(InputStream is, byte[] buffer) throws IOException {
+    static void readFully(InputStream is, byte[] buffer) throws IOException {
 
-		readFully(is, buffer, 0, buffer.length);
+        readFully(is, buffer, 0, buffer.length);
 
-	}
+    }
 
-	static void readFully(InputStream is, byte[] buffer, int off, int len) throws IOException {
+    static void readFully(InputStream is, byte[] buffer, int off, int len) throws IOException {
 
-		do {
+        do {
 
-			int bytesRead = is.read(buffer, off, len);
-			if (bytesRead == -1) {
-				throw new EOFException("Unexpected end of input stream.");
-			}
+            int bytesRead = is.read(buffer, off, len);
+            if (bytesRead == -1) {
+                throw new EOFException("Unexpected end of input stream.");
+            }
 
-			len -= bytesRead;
-			off += bytesRead;
+            len -= bytesRead;
+            off += bytesRead;
 
-		} while (len > 0);
+        } while (len > 0);
 
-	}
+    }
 
 }

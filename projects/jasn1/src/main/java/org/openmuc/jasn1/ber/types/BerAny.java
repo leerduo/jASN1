@@ -28,54 +28,54 @@ import org.openmuc.jasn1.ber.BerLength;
 
 public class BerAny {
 
-	public byte[] value;
+    public byte[] value;
 
-	public BerAny() {
-	}
+    public BerAny() {
+    }
 
-	public BerAny(byte[] value) {
-		this.value = value;
-	}
+    public BerAny(byte[] value) {
+        this.value = value;
+    }
 
-	public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {
+    public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {
 
-		os.write(value);
-		int codeLength = value.length;
+        os.write(value);
+        int codeLength = value.length;
 
-		codeLength += BerLength.encodeLength(os, codeLength);
+        codeLength += BerLength.encodeLength(os, codeLength);
 
-		return codeLength;
-	}
+        return codeLength;
+    }
 
-	public int decode(InputStream is, boolean explicit) throws IOException {
+    public int decode(InputStream is, boolean explicit) throws IOException {
 
-		int codeLength = 0;
+        int codeLength = 0;
 
-		BerLength length = new BerLength();
-		codeLength += length.decode(is);
+        BerLength length = new BerLength();
+        codeLength += length.decode(is);
 
-		value = new byte[length.val];
+        value = new byte[length.val];
 
-		if (length.val != 0) {
-			Util.readFully(is, value);
-			codeLength += length.val;
-		}
+        if (length.val != 0) {
+            Util.readFully(is, value);
+            codeLength += length.val;
+        }
 
-		return codeLength;
+        return codeLength;
 
-	}
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder builder = new StringBuilder();
-		for (byte element : value) {
-			String hexString = Integer.toHexString(element & 0xff);
-			if (hexString.length() == 1) {
-				builder.append("0");
-			}
-			builder.append(hexString);
-		}
-		return builder.toString();
-	}
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (byte element : value) {
+            String hexString = Integer.toHexString(element & 0xff);
+            if (hexString.length() == 1) {
+                builder.append("0");
+            }
+            builder.append(hexString);
+        }
+        return builder.toString();
+    }
 
 }

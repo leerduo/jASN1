@@ -22,8 +22,8 @@ package org.openmuc.jasn1.compiler.model;
 
 public class AsnSequenceSet extends AsnConstructedType {
 
-	public AsnElementTypeList elementTypeList;
-	public AsnConstraint constraint;
-	public boolean isSequence = false;
+    public AsnElementTypeList elementTypeList;
+    public AsnConstraint constraint;
+    public boolean isSequence = false;
 
 }
