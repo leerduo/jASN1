@@ -106,34 +106,39 @@ public class AutomaticTaggingTest {
     public void compilingProfileElementFileManagement() throws Exception {
 
         ProfileElement genericFileManagementProfileElement = new ProfileElement();
+
+        List<FileManagement.CHOICE> choices = new ArrayList<>();
+        choices.add(createDf((short) 0x3f00, "7821", (byte) 0x0e, "01020A"));
+        choices.addAll(createEf((short) 0x2f05, "4121", (byte) 0x0F, (short) 3, (short) 0x28));
+        choices.addAll(createEf((short) 0x2fe2, "4121", (byte) 0x0B, (short) 0x0A, null, "98109909002143658739", null));
+        choices.addAll(createEf((short) 0x2f00, "42210026", (byte) 0x0A, (short) 0x98, (short) 0xF0,
+                "61184F10A0000000871002FF33FF01890000010050045553494D", null));
+        choices.addAll(createEf((short) 0x2f06, "42210025", (byte) 0x0A, (short) 0x01EF, null, Arrays.asList(
+                new FileRecordContent(null, "8001019000800102A406830101950108800158A40683010A950108"),
+                new FileRecordContent(10, "800101A40683010195010880015AA40683010A950108"),
+                new FileRecordContent(15, "80015BA40683010A950108"),
+                new FileRecordContent(26, "800101900080015A9700"),
+                new FileRecordContent(27, "800103A406830101950108800158A40683010A950108"),
+                new FileRecordContent(15, "800111A40683010195010880014AA40683010A950108"),
+                new FileRecordContent(15,
+                        "800103A406830101950108800158A40683010A950108840132A406830101950108"),
+                new FileRecordContent(4,
+                        "800101A406830101950108800102A406830181950108800158A40683010A950108"),
+                new FileRecordContent(4, "800101900080011AA406830101950108800140A40683010A950108"),
+                new FileRecordContent(10, "800101900080015AA40683010A950108"),
+                new FileRecordContent(21, "8001019000800118A40683010A9501088001429700"),
+                new FileRecordContent(14, "800101A40683010195010880015A9700"),
+                new FileRecordContent(21, "800113A406830101950108800148A40683010A950108"),
+                new FileRecordContent(13, "80015EA40683010A950108"),
+                new FileRecordContent(26,
+                        "8001019000800102A010A406830101950108A406830102950108800158A40683010A950108"))));
+        choices.addAll(createEf((short) 0x2f08, "4121", (byte) 0x0A, (short) 5));
+
         genericFileManagementProfileElement.genericFileManagement = new PEGenericFileManagement(
                 new PEHeader(new BerNull(), new UInt15(1)),
                 new PEGenericFileManagement.FileManagementCMD(Arrays.asList(
-                        createDf((short) 0x3f00, "7821", (byte) 0x0e, "01020A"),
-                        createEf((short) 0x2f05, "4121", (byte) 0x0F, (short) 3, (short) 0x28),
-                        createEf((short) 0x2fe2, "4121", (byte) 0x0B, (short) 0x0A, null, "98109909002143658739", null),
-                        createEf((short) 0x2f00, "42210026", (byte) 0x0A, (short) 0x98, (short) 0xF0,
-                                "61184F10A0000000871002FF33FF01890000010050045553494D", null),
-                        createEf((short) 0x2f06, "42210025", (byte) 0x0A, (short) 0x01EF, null, Arrays.asList(
-                                new FileRecordContent(null, "8001019000800102A406830101950108800158A40683010A950108"),
-                                new FileRecordContent(10, "800101A40683010195010880015AA40683010A950108"),
-                                new FileRecordContent(15, "80015BA40683010A950108"),
-                                new FileRecordContent(26, "800101900080015A9700"),
-                                new FileRecordContent(27, "800103A406830101950108800158A40683010A950108"),
-                                new FileRecordContent(15, "800111A40683010195010880014AA40683010A950108"),
-                                new FileRecordContent(15,
-                                        "800103A406830101950108800158A40683010A950108840132A406830101950108"),
-                                new FileRecordContent(4,
-                                        "800101A406830101950108800102A406830181950108800158A40683010A950108"),
-                                new FileRecordContent(4, "800101900080011AA406830101950108800140A40683010A950108"),
-                                new FileRecordContent(10, "800101900080015AA40683010A950108"),
-                                new FileRecordContent(21, "8001019000800118A40683010A9501088001429700"),
-                                new FileRecordContent(14, "800101A40683010195010880015A9700"),
-                                new FileRecordContent(21, "800113A406830101950108800148A40683010A950108"),
-                                new FileRecordContent(13, "80015EA40683010A950108"),
-                                new FileRecordContent(26,
-                                        "8001019000800102A010A406830101950108A406830102950108800158A40683010A950108"))),
-                        createEf((short) 0x2f08, "4121", (byte) 0x0A, (short) 5))
+                        new FileManagement(choices)
+                )
 
                 ));
         BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
@@ -171,7 +176,7 @@ public class AutomaticTaggingTest {
      * @return byte array of length 2.
      */
     public static byte[] unsignedShortToByteArray(int num) {
-        if (num < 255) {
+        if (num < 128) {
             return new byte[]{(byte)num};
         }
         byte hiByte = (byte) ((num & 0xFF00) >> 8);
@@ -179,23 +184,23 @@ public class AutomaticTaggingTest {
         return new byte[]{hiByte, loByte};
     }
 
-    private static FileManagement createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize) {
         return createEf(fileId, fileDescriptor, arrReference, efFileSize, null, null, null, null);
     }
 
-    private static FileManagement createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                           Short shortEfId) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
+                                                        Short shortEfId) {
         return createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId, null, null, null);
     }
 
-    private static FileManagement createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                           Short shortEfId, String fillFileContent, Integer fillFileOffset) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
+                                                        Short shortEfId, String fillFileContent, Integer fillFileOffset) {
         return createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId, null, fillFileContent,
                 fillFileOffset);
     }
 
-    private static FileManagement createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                           Short shortEfId, String linkPath, String fillFileContent, Integer fillFileOffset) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
+                                                        Short shortEfId, String linkPath, String fillFileContent, Integer fillFileOffset) {
         List<FileManagement.CHOICE> fileManagementSubChoices = new ArrayList<>();
         fileManagementSubChoices.add(
                 new FileManagement.CHOICE(null,
@@ -213,31 +218,30 @@ public class AutomaticTaggingTest {
                             new BerOctetString(HexConverter.fromShortHexString(fillFileContent)))
             );
         }
-        return new FileManagement(fileManagementSubChoices);
+        return fileManagementSubChoices;
     }
 
-    private static FileManagement createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                           Short shortEfId, List<FileRecordContent> fillFileRecordContents) {
-        final FileManagement fileManagement = createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId);
-        fileManagement.seqOf = new ArrayList<>(fileManagement.seqOf);
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
+                                                        Short shortEfId, List<FileRecordContent> fillFileRecordContents) {
+        final List<FileManagement.CHOICE> fileManagementChoices = createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId);
         if (fillFileRecordContents != null) {
             for (FileRecordContent fileRecordContent : fillFileRecordContents) {
                 if (fileRecordContent.fillFileOffset != null) {
-                    fileManagement.seqOf.add(new FileManagement.CHOICE(null, null,
+                    fileManagementChoices.add(new FileManagement.CHOICE(null, null,
                             new UInt16(fileRecordContent.fillFileOffset), null));
                 }
-                fileManagement.seqOf.add(new FileManagement.CHOICE(null, null,
+                fileManagementChoices.add(new FileManagement.CHOICE(null, null,
                         null,
                         new BerOctetString(DatatypeConverter.parseHexBinary(fileRecordContent.fillFileContent))));
             }
         }
-        return fileManagement;
+        return fileManagementChoices;
     }
 
-    private static FileManagement createDf(short fileId, String fileDescriptor, byte arrReference,
-                                           String pinStatusTemplateDo) {
-        return new FileManagement(Arrays.asList(new FileManagement.CHOICE(null,
-                createFcp(fileId, fileDescriptor, arrReference, null, pinStatusTemplateDo, null, null), null, null)));
+    private static FileManagement.CHOICE createDf(short fileId, String fileDescriptor, byte arrReference,
+                                                  String pinStatusTemplateDo) {
+        return new FileManagement.CHOICE(null,
+                createFcp(fileId, fileDescriptor, arrReference, null, pinStatusTemplateDo, null, null), null, null);
     }
 
     private static Fcp createFcp(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
@@ -249,7 +253,7 @@ public class AutomaticTaggingTest {
                 efFileSize != null ? new BerOctetString(unsignedShortToByteArray(efFileSize)) : null,
                 pinStatusTemplateDo != null ? new BerOctetString(DatatypeConverter.parseHexBinary(pinStatusTemplateDo))
                         : null,
-                shortEfId != null ? new BerOctetString(unsignedShortToByteArray(shortEfId)) : null, null,
+                shortEfId != null ? new BerOctetString(new byte[]{shortEfId.byteValue()}) : null, null,
                 linkPath != null ? new BerOctetString(DatatypeConverter.parseHexBinary(linkPath)) : null);
 
     }
