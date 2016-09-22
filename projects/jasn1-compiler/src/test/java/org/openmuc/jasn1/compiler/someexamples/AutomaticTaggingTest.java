@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Examples taken from Annex C, eUICC Profile Package: Interoperable Format Technical Specification, 2.0
+ */
 public class AutomaticTaggingTest {
 
     @Test
@@ -59,8 +62,6 @@ public class AutomaticTaggingTest {
         ProfileElement rereadProfileElement = new ProfileElement();
         rereadProfileElement.decode(new ByteArrayInputStream(code), null);
 
-        System.out.println(rereadProfileElement);
-
         BerByteArrayOutputStream berByteArrayOutputStream2 = new BerByteArrayOutputStream(2048, true);
         rereadProfileElement.encode(berByteArrayOutputStream2, false);
         byte[] code2 = berByteArrayOutputStream2.getArray();
@@ -69,9 +70,7 @@ public class AutomaticTaggingTest {
     }
 
     @Test
-    public void compilingProfileElementHeader() throws Exception {
-
-        // taken from Annex C
+    public void header() throws Exception {
         ProfileElement headerProfileElement = new ProfileElement();
 
         ServicesList servicesList = new ServicesList();
@@ -102,8 +101,53 @@ public class AutomaticTaggingTest {
         Assert.assertEquals(expected, DatatypeConverter.printHexBinary(code));
     }
 
+    private static PUKConfiguration createPUK(byte pukReference,
+                                              String pukValue) {
+        return createPUK(pukReference, pukValue, null, null);
+    }
+
+    private static PUKConfiguration createPUK(byte pukReference,
+                                              String pukValue, Byte maxNumOfAttempts, Byte retryNumLeft) {
+        return new PUKConfiguration(new PUKKeyReferenceValue(pukReference),
+                new BerOctetString(DatatypeConverter.parseHexBinary(pukValue)),
+                maxNumOfAttempts != null && retryNumLeft != null ? new UInt8((maxNumOfAttempts << 4) | retryNumLeft) : null);
+    }
+
     @Test
-    public void compilingProfileElementFileManagement() throws Exception {
+    public void puk() throws Exception {
+
+        ProfileElement pukProfileElement = new ProfileElement();
+
+        PEPUKCodes.PukCodes pukCodes = new PEPUKCodes.PukCodes(
+                Arrays.asList(
+                        createPUK((byte)1, "3030303030303030", (byte)9,(byte)9),
+                        createPUK((byte)2, "3132333435363738"),
+                        createPUK((byte)0x81, "3132333435363738", (byte)8, (byte)8))
+        );
+
+        PEPUKCodes pepukCodes = new PEPUKCodes(new PEHeader(new BerNull(), new UInt15(2)),
+                pukCodes);
+
+        pukProfileElement.pukCodes = pepukCodes;
+
+        BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
+        pukProfileElement.encode(berByteArrayOutputStream, false);
+        byte[] code = berByteArrayOutputStream.getArray();
+        System.out.println(HexConverter.toShortHexString(code));
+        ProfileElement rereadProfileElement = new ProfileElement();
+        rereadProfileElement.decode(new ByteArrayInputStream(code), null);
+        BerByteArrayOutputStream berByteArrayOutputStream2 = new BerByteArrayOutputStream(2048, true);
+        rereadProfileElement.encode(berByteArrayOutputStream2, false);
+        byte[] code2 = berByteArrayOutputStream2.getArray();
+        Assert.assertArrayEquals(code, code2);
+
+        String expected = "A3 3F A0 05 80 00 81 01 02 A1 36 30 11 80 01 01 81 08 3030303030303030 82 02 0099 30 0D 80 01 02 81 08 3132333435363738 30 12 80 02 0081 81 08 3132333435363738 82 02 0088"
+                .replaceAll("\\s", "");
+        Assert.assertEquals(expected, DatatypeConverter.printHexBinary(code));
+    }
+
+    @Test
+    public void genericFileManagement() throws Exception {
 
         ProfileElement genericFileManagementProfileElement = new ProfileElement();
 
