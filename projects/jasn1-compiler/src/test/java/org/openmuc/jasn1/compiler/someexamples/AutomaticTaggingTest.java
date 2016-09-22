@@ -101,12 +101,12 @@ public class AutomaticTaggingTest {
         Assert.assertEquals(expected, DatatypeConverter.printHexBinary(code));
     }
 
-    private static PUKConfiguration createPUK(byte pukReference,
+    private static PUKConfiguration createPUK(int pukReference,
                                               String pukValue) {
         return createPUK(pukReference, pukValue, null, null);
     }
 
-    private static PUKConfiguration createPUK(byte pukReference,
+    private static PUKConfiguration createPUK(int pukReference,
                                               String pukValue, Byte maxNumOfAttempts, Byte retryNumLeft) {
         return new PUKConfiguration(new PUKKeyReferenceValue(pukReference),
                 new BerOctetString(DatatypeConverter.parseHexBinary(pukValue)),
@@ -120,9 +120,9 @@ public class AutomaticTaggingTest {
 
         PEPUKCodes.PukCodes pukCodes = new PEPUKCodes.PukCodes(
                 Arrays.asList(
-                        createPUK((byte)1, "3030303030303030", (byte)9,(byte)9),
-                        createPUK((byte)2, "3132333435363738"),
-                        createPUK((byte)0x81, "3132333435363738", (byte)8, (byte)8))
+                        createPUK(1, "3030303030303030", (byte)9,(byte)9),
+                        createPUK(2, "3132333435363738"),
+                        createPUK(0x81, "3132333435363738", (byte)8, (byte)8))
         );
 
         PEPUKCodes pepukCodes = new PEPUKCodes(new PEHeader(new BerNull(), new UInt15(2)),
