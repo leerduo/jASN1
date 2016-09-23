@@ -1432,7 +1432,7 @@ public class BerClassWriter {
             return isPrimitive(((AsnDefinedType) asnType).typeName, module);
         }
         else if (asnType instanceof AsnChoice) {
-            throw new IllegalStateException("This function is not applicable to CHOICEs");
+            return false;
         }
         else {
             return true;
