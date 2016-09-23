@@ -105,7 +105,7 @@ PolicyQualifierInfo ::= SEQUENCE {
 -- augment the following definition for PolicyQualifierId
 
 PolicyQualifierId ::=
-    OBJECT IDENTIFIER ( id-qt-cps | id-qt-unotice )
+    OBJECT IDENTIFIER -- ( id-qt-cps | id-qt-unotice )
 
 -- CPS pointer qualifier
 
