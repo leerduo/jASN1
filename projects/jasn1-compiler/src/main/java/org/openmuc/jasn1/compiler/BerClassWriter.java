@@ -70,7 +70,7 @@ public class BerClassWriter {
     private File outputDirectory;
 
     BerClassWriter(HashMap<String, AsnModule> modulesByName, String outputBaseDir, String basePackageName,
-            boolean jaxbMode, boolean supportIndefiniteLength) throws IOException {
+                   boolean jaxbMode, boolean supportIndefiniteLength) throws IOException {
         this.supportIndefiniteLength = supportIndefiniteLength;
         this.jaxbMode = jaxbMode;
         this.outputBaseDir = outputBaseDir;
@@ -191,7 +191,7 @@ public class BerClassWriter {
     }
 
     private void writeConstructedTypeClass(AsnType asnType, String tagNum, String tagClass, String className,
-            boolean asInternalClass) throws IOException {
+                                           boolean asInternalClass) throws IOException {
         if (asnType instanceof AsnSequenceSet) {
             writeSequenceOrSetClass((AsnSequenceSet) asnType, tagNum, tagClass, className, asInternalClass);
         }
@@ -204,7 +204,7 @@ public class BerClassWriter {
     }
 
     private void writeChoiceClass(AsnChoice asn1TypeElement, String tagNum, String tagClass, String className,
-            boolean asInternalClass) throws IOException {
+                                  boolean asInternalClass) throws IOException {
 
         if (className.isEmpty()) {
             className = cleanUpName(asn1TypeElement.name);
@@ -470,7 +470,7 @@ public class BerClassWriter {
     }
 
     private void writeSequenceOfClass(AsnSequenceOf asnSequenceOf, String tagNum, String tagClass, String className,
-            boolean asInternalClass) throws IOException {
+                                      boolean asInternalClass) throws IOException {
 
         if (tagClass.isEmpty()) {
             tagClass = "UNIVERSAL_CLASS";
@@ -695,7 +695,7 @@ public class BerClassWriter {
     }
 
     private void writeSequenceOrSetClass(AsnSequenceSet asnSequenceSet, String tagNum, String tagClass,
-            String className, boolean asInternalClass) throws IOException {
+                                         String className, boolean asInternalClass) throws IOException {
 
         if (tagClass.isEmpty()) {
             tagClass = "UNIVERSAL_CLASS";
@@ -1760,7 +1760,7 @@ public class BerClassWriter {
     }
 
     private void writeRetaggingTypeClass(String tagNum, String tagClass, String typeName, String assignedTypeName,
-            boolean explicit, AsnType typeDefinition) throws IOException {
+                                         boolean explicit, AsnType typeDefinition) throws IOException {
 
         boolean assignedTypeIsDirectChoice = isADirectChoice(assignedTypeName);
 
@@ -1962,7 +1962,8 @@ public class BerClassWriter {
                 if (asnType instanceof AsnDefinedType) {
                     return isADirectChoice(((AsnDefinedType) asnType).typeName, module);
                 }
-                else if (asnType instanceof AsnChoice) {
+                else if (asnType instanceof AsnChoice ||
+                        (asnType instanceof AsnTaggedType && ((AsnTaggedType) asnType).typeReference instanceof AsnChoice)) {
                     return true;
                 }
                 else {
