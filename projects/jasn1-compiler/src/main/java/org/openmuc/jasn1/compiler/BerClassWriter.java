@@ -1540,7 +1540,8 @@ public class BerClassWriter {
 
         // TODO make this part of the is a directchoice function:
         if ((!taggedType.typeName.isEmpty() && isADirectChoice(taggedType.typeName))
-                || ((taggedType.typeReference != null) && (taggedType.typeReference instanceof AsnChoice))) {
+                || ((taggedType.typeReference != null) && (taggedType.typeReference instanceof AsnChoice))
+                || (taggedType.typeReference != null && taggedType.typeReference instanceof AsnAny)) {
             return true;
         }
 
