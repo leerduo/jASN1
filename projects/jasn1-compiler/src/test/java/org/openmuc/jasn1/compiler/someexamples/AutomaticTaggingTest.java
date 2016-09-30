@@ -20,6 +20,13 @@
  */
 package org.openmuc.jasn1.compiler.someexamples;
 
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.xml.bind.DatatypeConverter;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmuc.jasn1.ber.BerByteArrayOutputStream;
@@ -29,13 +36,19 @@ import org.openmuc.jasn1.ber.types.BerOctetString;
 import org.openmuc.jasn1.ber.types.string.BerUTF8String;
 import org.openmuc.jasn1.compiler.Compiler;
 import org.openmuc.jasn1.compiler.HexConverter;
-import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.*;
-
-import javax.xml.bind.DatatypeConverter;
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.Fcp;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.FileManagement;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.PEGenericFileManagement;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.PEHeader;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.PEPUKCodes;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.PUKConfiguration;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.PUKKeyReferenceValue;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.ProfileElement;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.ProfileHeader;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.ServicesList;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.UInt15;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.UInt16;
+import org.openmuc.jasn1.compiler.automatictagging.generated.pedefinitions.UInt8;
 
 /**
  * Examples taken from Annex C, eUICC Profile Package: Interoperable Format Technical Specification, 2.0
@@ -45,9 +58,9 @@ public class AutomaticTaggingTest {
     @Test
     public void compiling() throws Exception {
 
-        String[] args = new String[]{"-o", "src/test/java-gen/org/openmuc/jasn1/compiler/automatictagging/generated",
+        String[] args = new String[] { "-o", "src/test/java-gen/org/openmuc/jasn1/compiler/automatictagging/generated",
                 "-p", "org.openmuc.jasn1.compiler.automatictagging.generated", "-il",
-                "src/test/resources/PEDefinitions V2.0.asn"};
+                "src/test/resources/PEDefinitionsV2.0.asn" };
         Compiler.main(args);
     }
 
@@ -75,8 +88,8 @@ public class AutomaticTaggingTest {
 
         ServicesList servicesList = new ServicesList();
         ProfileHeader.EUICCMandatoryGFSTEList GFSTEList = new ProfileHeader.EUICCMandatoryGFSTEList();
-        GFSTEList.seqOf = Arrays.asList(new BerObjectIdentifier(new int[]{2, 23, 143, 1, 2, 1}),
-                new BerObjectIdentifier(new int[]{2, 23, 143, 1, 2, 4}));
+        GFSTEList.seqOf = Arrays.asList(new BerObjectIdentifier(new int[] { 2, 23, 143, 1, 2, 1 }),
+                new BerObjectIdentifier(new int[] { 2, 23, 143, 1, 2, 4 }));
 
         servicesList.usim = new BerNull();
         servicesList.milenage = new BerNull();
@@ -101,16 +114,16 @@ public class AutomaticTaggingTest {
         Assert.assertEquals(expected, DatatypeConverter.printHexBinary(code));
     }
 
-    private static PUKConfiguration createPUK(int pukReference,
-                                              String pukValue) {
+    private static PUKConfiguration createPUK(byte pukReference, String pukValue) {
         return createPUK(pukReference, pukValue, null, null);
     }
 
-    private static PUKConfiguration createPUK(int pukReference,
-                                              String pukValue, Byte maxNumOfAttempts, Byte retryNumLeft) {
-        return new PUKConfiguration(new PUKKeyReferenceValue(pukReference),
+    private static PUKConfiguration createPUK(byte pukReference, String pukValue, Byte maxNumOfAttempts,
+            Byte retryNumLeft) {
+        return new PUKConfiguration(new PUKKeyReferenceValue(pukReference & 0xff),
                 new BerOctetString(DatatypeConverter.parseHexBinary(pukValue)),
-                maxNumOfAttempts != null && retryNumLeft != null ? new UInt8((maxNumOfAttempts << 4) | retryNumLeft) : null);
+                maxNumOfAttempts != null && retryNumLeft != null ? new UInt8((maxNumOfAttempts << 4) | retryNumLeft)
+                        : null);
     }
 
     @Test
@@ -118,15 +131,11 @@ public class AutomaticTaggingTest {
 
         ProfileElement pukProfileElement = new ProfileElement();
 
-        PEPUKCodes.PukCodes pukCodes = new PEPUKCodes.PukCodes(
-                Arrays.asList(
-                        createPUK(1, "3030303030303030", (byte)9,(byte)9),
-                        createPUK(2, "3132333435363738"),
-                        createPUK(0x81, "3132333435363738", (byte)8, (byte)8))
-        );
+        PEPUKCodes.PukCodes pukCodes = new PEPUKCodes.PukCodes(Arrays.asList(
+                createPUK((byte) 1, "3030303030303030", (byte) 9, (byte) 9), createPUK((byte) 2, "3132333435363738"),
+                createPUK((byte) 0x81, "3132333435363738", (byte) 8, (byte) 8)));
 
-        PEPUKCodes pepukCodes = new PEPUKCodes(new PEHeader(new BerNull(), new UInt15(2)),
-                pukCodes);
+        PEPUKCodes pepukCodes = new PEPUKCodes(new PEHeader(new BerNull(), new UInt15(2)), pukCodes);
 
         pukProfileElement.pukCodes = pepukCodes;
 
@@ -157,32 +166,27 @@ public class AutomaticTaggingTest {
         choices.addAll(createEf((short) 0x2fe2, "4121", (byte) 0x0B, (short) 0x0A, null, "98109909002143658739", null));
         choices.addAll(createEf((short) 0x2f00, "42210026", (byte) 0x0A, (short) 0x98, (short) 0xF0,
                 "61184F10A0000000871002FF33FF01890000010050045553494D", null));
-        choices.addAll(createEf((short) 0x2f06, "42210025", (byte) 0x0A, (short) 0x01EF, null, Arrays.asList(
-                new FileRecordContent(null, "8001019000800102A406830101950108800158A40683010A950108"),
-                new FileRecordContent(10, "800101A40683010195010880015AA40683010A950108"),
-                new FileRecordContent(15, "80015BA40683010A950108"),
-                new FileRecordContent(26, "800101900080015A9700"),
-                new FileRecordContent(27, "800103A406830101950108800158A40683010A950108"),
-                new FileRecordContent(15, "800111A40683010195010880014AA40683010A950108"),
-                new FileRecordContent(15,
-                        "800103A406830101950108800158A40683010A950108840132A406830101950108"),
-                new FileRecordContent(4,
-                        "800101A406830101950108800102A406830181950108800158A40683010A950108"),
-                new FileRecordContent(4, "800101900080011AA406830101950108800140A40683010A950108"),
-                new FileRecordContent(10, "800101900080015AA40683010A950108"),
-                new FileRecordContent(21, "8001019000800118A40683010A9501088001429700"),
-                new FileRecordContent(14, "800101A40683010195010880015A9700"),
-                new FileRecordContent(21, "800113A406830101950108800148A40683010A950108"),
-                new FileRecordContent(13, "80015EA40683010A950108"),
-                new FileRecordContent(26,
-                        "8001019000800102A010A406830101950108A406830102950108800158A40683010A950108"))));
+        choices.addAll(createEf((short) 0x2f06, "42210025", (byte) 0x0A, (short) 0x01EF, null,
+                Arrays.asList(new FileRecordContent(null, "8001019000800102A406830101950108800158A40683010A950108"),
+                        new FileRecordContent(10, "800101A40683010195010880015AA40683010A950108"),
+                        new FileRecordContent(15, "80015BA40683010A950108"),
+                        new FileRecordContent(26, "800101900080015A9700"),
+                        new FileRecordContent(27, "800103A406830101950108800158A40683010A950108"),
+                        new FileRecordContent(15, "800111A40683010195010880014AA40683010A950108"),
+                        new FileRecordContent(15, "800103A406830101950108800158A40683010A950108840132A406830101950108"),
+                        new FileRecordContent(4, "800101A406830101950108800102A406830181950108800158A40683010A950108"),
+                        new FileRecordContent(4, "800101900080011AA406830101950108800140A40683010A950108"),
+                        new FileRecordContent(10, "800101900080015AA40683010A950108"),
+                        new FileRecordContent(21, "8001019000800118A40683010A9501088001429700"),
+                        new FileRecordContent(14, "800101A40683010195010880015A9700"),
+                        new FileRecordContent(21, "800113A406830101950108800148A40683010A950108"),
+                        new FileRecordContent(13, "80015EA40683010A950108"), new FileRecordContent(26,
+                                "8001019000800102A010A406830101950108A406830102950108800158A40683010A950108"))));
         choices.addAll(createEf((short) 0x2f08, "4121", (byte) 0x0A, (short) 5));
 
         genericFileManagementProfileElement.genericFileManagement = new PEGenericFileManagement(
                 new PEHeader(new BerNull(), new UInt15(1)),
-                new PEGenericFileManagement.FileManagementCMD(Arrays.asList(
-                        new FileManagement(choices)
-                )
+                new PEGenericFileManagement.FileManagementCMD(Arrays.asList(new FileManagement(choices))
 
                 ));
         BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(2048, true);
@@ -216,66 +220,61 @@ public class AutomaticTaggingTest {
     /**
      * Converts a unsigned short to a byte array.
      *
-     * @param num The number.
+     * @param num
+     *            The number.
      * @return byte array of length 2.
      */
     public static byte[] unsignedShortToByteArray(int num) {
         if (num < 128) {
-            return new byte[]{(byte)num};
+            return new byte[] { (byte) num };
         }
         byte hiByte = (byte) ((num & 0xFF00) >> 8);
         byte loByte = (byte) (num - (hiByte << 8));
-        return new byte[]{hiByte, loByte};
+        return new byte[] { hiByte, loByte };
     }
 
-    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference,
+            Short efFileSize) {
         return createEf(fileId, fileDescriptor, arrReference, efFileSize, null, null, null, null);
     }
 
-    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                                        Short shortEfId) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference,
+            Short efFileSize, Short shortEfId) {
         return createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId, null, null, null);
     }
 
-    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                                        Short shortEfId, String fillFileContent, Integer fillFileOffset) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference,
+            Short efFileSize, Short shortEfId, String fillFileContent, Integer fillFileOffset) {
         return createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId, null, fillFileContent,
                 fillFileOffset);
     }
 
-    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                                        Short shortEfId, String linkPath, String fillFileContent, Integer fillFileOffset) {
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference,
+            Short efFileSize, Short shortEfId, String linkPath, String fillFileContent, Integer fillFileOffset) {
         List<FileManagement.CHOICE> fileManagementSubChoices = new ArrayList<>();
-        fileManagementSubChoices.add(
-                new FileManagement.CHOICE(null,
-                        createFcp(fileId, fileDescriptor, arrReference, efFileSize, null, shortEfId, linkPath), null, null)
-        );
+        fileManagementSubChoices.add(new FileManagement.CHOICE(null,
+                createFcp(fileId, fileDescriptor, arrReference, efFileSize, null, shortEfId, linkPath), null, null));
         if (fillFileOffset != null) {
-            fileManagementSubChoices.add(new FileManagement.CHOICE(null, null,
-                            new UInt16(fillFileOffset),
-                            null)
-            );
+            fileManagementSubChoices.add(new FileManagement.CHOICE(null, null, new UInt16(fillFileOffset), null));
         }
         if (fillFileContent != null) {
-            fileManagementSubChoices.add(new FileManagement.CHOICE(null, null,
-                            null,
-                            new BerOctetString(HexConverter.fromShortHexString(fillFileContent)))
-            );
+            fileManagementSubChoices.add(new FileManagement.CHOICE(null, null, null,
+                    new BerOctetString(HexConverter.fromShortHexString(fillFileContent))));
         }
         return fileManagementSubChoices;
     }
 
-    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                                        Short shortEfId, List<FileRecordContent> fillFileRecordContents) {
-        final List<FileManagement.CHOICE> fileManagementChoices = createEf(fileId, fileDescriptor, arrReference, efFileSize, shortEfId);
+    private static List<FileManagement.CHOICE> createEf(short fileId, String fileDescriptor, byte arrReference,
+            Short efFileSize, Short shortEfId, List<FileRecordContent> fillFileRecordContents) {
+        final List<FileManagement.CHOICE> fileManagementChoices = createEf(fileId, fileDescriptor, arrReference,
+                efFileSize, shortEfId);
         if (fillFileRecordContents != null) {
             for (FileRecordContent fileRecordContent : fillFileRecordContents) {
                 if (fileRecordContent.fillFileOffset != null) {
-                    fileManagementChoices.add(new FileManagement.CHOICE(null, null,
-                            new UInt16(fileRecordContent.fillFileOffset), null));
+                    fileManagementChoices.add(
+                            new FileManagement.CHOICE(null, null, new UInt16(fileRecordContent.fillFileOffset), null));
                 }
-                fileManagementChoices.add(new FileManagement.CHOICE(null, null,
-                        null,
+                fileManagementChoices.add(new FileManagement.CHOICE(null, null, null,
                         new BerOctetString(DatatypeConverter.parseHexBinary(fileRecordContent.fillFileContent))));
             }
         }
@@ -283,21 +282,21 @@ public class AutomaticTaggingTest {
     }
 
     private static FileManagement.CHOICE createDf(short fileId, String fileDescriptor, byte arrReference,
-                                                  String pinStatusTemplateDo) {
+            String pinStatusTemplateDo) {
         return new FileManagement.CHOICE(null,
                 createFcp(fileId, fileDescriptor, arrReference, null, pinStatusTemplateDo, null, null), null, null);
     }
 
     private static Fcp createFcp(short fileId, String fileDescriptor, byte arrReference, Short efFileSize,
-                                 String pinStatusTemplateDo, Short shortEfId, String linkPath) {
+            String pinStatusTemplateDo, Short shortEfId, String linkPath) {
 
         return new Fcp(new BerOctetString(DatatypeConverter.parseHexBinary(fileDescriptor)),
                 new BerOctetString(unsignedShortToByteArray(fileId)), null, null,
-                new BerOctetString(new byte[]{arrReference}),
+                new BerOctetString(new byte[] { arrReference }),
                 efFileSize != null ? new BerOctetString(unsignedShortToByteArray(efFileSize)) : null,
                 pinStatusTemplateDo != null ? new BerOctetString(DatatypeConverter.parseHexBinary(pinStatusTemplateDo))
                         : null,
-                shortEfId != null ? new BerOctetString(new byte[]{shortEfId.byteValue()}) : null, null,
+                shortEfId != null ? new BerOctetString(new byte[] { shortEfId.byteValue() }) : null, null,
                 linkPath != null ? new BerOctetString(DatatypeConverter.parseHexBinary(linkPath)) : null);
 
     }

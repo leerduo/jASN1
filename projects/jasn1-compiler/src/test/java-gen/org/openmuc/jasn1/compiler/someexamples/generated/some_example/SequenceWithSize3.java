@@ -68,15 +68,16 @@ public class SequenceWithSize3 {
 	public int decode(InputStream is, boolean explicit) throws IOException {
 		int codeLength = 0;
 		int subCodeLength = 0;
+		BerIdentifier berIdentifier = new BerIdentifier();
 		if (explicit) {
 			codeLength += id.decodeAndCheck(is);
 		}
 
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
+		int totalLength = length.val;
 
 		if (length.val == -1) {
-			BerIdentifier berIdentifier = new BerIdentifier();
 			while (true) {
 				subCodeLength += berIdentifier.decode(is);
 
@@ -97,13 +98,13 @@ public class SequenceWithSize3 {
 				seqOf.add(element);
 			}
 		}
-		while (subCodeLength < length.val) {
+		while (subCodeLength < totalLength) {
 			ImplVisibleString element = new ImplVisibleString();
 			subCodeLength += element.decode(is, true);
 			seqOf.add(element);
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+		if (subCodeLength != totalLength) {
+			throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

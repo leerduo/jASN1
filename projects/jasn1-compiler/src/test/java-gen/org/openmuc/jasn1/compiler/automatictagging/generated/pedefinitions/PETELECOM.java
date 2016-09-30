@@ -473,9 +473,10 @@ public class PETELECOM {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -1161,7 +1162,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
 			dfTelecom = new File();
 			subCodeLength += dfTelecom.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1173,7 +1174,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
 			efArr = new File();
 			subCodeLength += efArr.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1182,7 +1183,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
 			efRma = new File();
 			subCodeLength += efRma.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1191,7 +1192,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
 			efSume = new File();
 			subCodeLength += efSume.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1200,7 +1201,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
 			efIceDn = new File();
 			subCodeLength += efIceDn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1209,7 +1210,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
 			efIceFf = new File();
 			subCodeLength += efIceFf.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1218,7 +1219,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
 			efPsismsc = new File();
 			subCodeLength += efPsismsc.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1227,7 +1228,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
 			dfGraphics = new File();
 			subCodeLength += dfGraphics.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1236,7 +1237,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
 			efImg = new File();
 			subCodeLength += efImg.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1245,7 +1246,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 11)) {
 			efIidf = new File();
 			subCodeLength += efIidf.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1254,7 +1255,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 12)) {
 			efIceGraphics = new File();
 			subCodeLength += efIceGraphics.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1263,7 +1264,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 13)) {
 			efLaunchScws = new File();
 			subCodeLength += efLaunchScws.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1272,7 +1273,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 14)) {
 			efIcon = new File();
 			subCodeLength += efIcon.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1281,7 +1282,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
 			dfPhonebook = new File();
 			subCodeLength += dfPhonebook.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1290,7 +1291,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 16)) {
 			efPbr = new File();
 			subCodeLength += efPbr.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1299,7 +1300,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 17)) {
 			efExt1 = new File();
 			subCodeLength += efExt1.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1308,7 +1309,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 18)) {
 			efAas = new File();
 			subCodeLength += efAas.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1317,7 +1318,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 19)) {
 			efGas = new File();
 			subCodeLength += efGas.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1326,7 +1327,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 20)) {
 			efPsc = new File();
 			subCodeLength += efPsc.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1335,7 +1336,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 21)) {
 			efCc = new File();
 			subCodeLength += efCc.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1344,7 +1345,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 22)) {
 			efPuid = new File();
 			subCodeLength += efPuid.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1353,7 +1354,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 23)) {
 			efIap = new File();
 			subCodeLength += efIap.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1362,7 +1363,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 24)) {
 			efAdn = new File();
 			subCodeLength += efAdn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1371,7 +1372,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 25)) {
 			efPbc = new File();
 			subCodeLength += efPbc.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1380,7 +1381,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 26)) {
 			efAnr = new File();
 			subCodeLength += efAnr.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1389,7 +1390,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 27)) {
 			efPuri = new File();
 			subCodeLength += efPuri.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1398,7 +1399,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 28)) {
 			efEmail = new File();
 			subCodeLength += efEmail.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1407,7 +1408,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 29)) {
 			efSne = new File();
 			subCodeLength += efSne.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1416,7 +1417,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 30)) {
 			efUid = new File();
 			subCodeLength += efUid.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1425,7 +1426,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 31)) {
 			efGrp = new File();
 			subCodeLength += efGrp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1434,7 +1435,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 32)) {
 			efCcp1 = new File();
 			subCodeLength += efCcp1.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1443,7 +1444,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 33)) {
 			dfMultimedia = new File();
 			subCodeLength += dfMultimedia.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1452,7 +1453,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 34)) {
 			efMml = new File();
 			subCodeLength += efMml.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1461,7 +1462,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 35)) {
 			efMmdf = new File();
 			subCodeLength += efMmdf.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1470,7 +1471,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 36)) {
 			dfMmss = new File();
 			subCodeLength += dfMmss.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1479,7 +1480,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 37)) {
 			efMlpl = new File();
 			subCodeLength += efMlpl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1488,7 +1489,7 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 38)) {
 			efMspl = new File();
 			subCodeLength += efMspl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -1497,11 +1498,11 @@ public class PETELECOM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 39)) {
 			efMmssmode = new File();
 			subCodeLength += efMmssmode.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

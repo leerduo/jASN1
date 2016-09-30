@@ -72,20 +72,22 @@ public class PersonnelRecordzz {
 		public int decode(InputStream is, boolean explicit) throws IOException {
 			int codeLength = 0;
 			int subCodeLength = 0;
+			BerIdentifier berIdentifier = new BerIdentifier();
 			if (explicit) {
 				codeLength += id.decodeAndCheck(is);
 			}
 
 			BerLength length = new BerLength();
 			codeLength += length.decode(is);
+			int totalLength = length.val;
 
-			while (subCodeLength < length.val) {
+			while (subCodeLength < totalLength) {
 				ChildInformationzz element = new ChildInformationzz();
 				subCodeLength += element.decode(is, true);
 				seqOf.add(element);
 			}
-			if (subCodeLength != length.val) {
-				throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+			if (subCodeLength != totalLength) {
+				throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 			}
 			codeLength += subCodeLength;
@@ -218,7 +220,8 @@ public class PersonnelRecordzz {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		while (subCodeLength < length.val) {
+		int totalLength = length.val;
+		while (subCodeLength < totalLength) {
 			subCodeLength += berIdentifier.decode(is);
 			if (berIdentifier.equals(Namezz.identifier)) {
 				name = new Namezz();
@@ -245,8 +248,8 @@ public class PersonnelRecordzz {
 				subCodeLength += children.decode(is, false);
 			}
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Length of set does not match length tag, length tag: " + length.val + ", actual set length: " + subCodeLength);
+		if (subCodeLength != totalLength) {
+			throw new IOException("Length of set does not match length tag, length tag: " + totalLength + ", actual set length: " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

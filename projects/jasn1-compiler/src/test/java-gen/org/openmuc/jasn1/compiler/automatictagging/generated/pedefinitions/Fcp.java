@@ -170,9 +170,10 @@ public class Fcp {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -347,14 +348,14 @@ public class Fcp {
 			return codeLength;
 		}
 
-		if (length.val == 0) {
+		if (totalLength == 0) {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			fileDescriptor = new BerOctetString();
 			subCodeLength += fileDescriptor.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -363,7 +364,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 3)) {
 			fileID = new BerOctetString();
 			subCodeLength += fileID.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -372,7 +373,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 4)) {
 			dfName = new ApplicationIdentifier();
 			subCodeLength += dfName.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -381,7 +382,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 			lcsi = new BerOctetString();
 			subCodeLength += lcsi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -390,7 +391,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 			securityAttributesReferenced = new BerOctetString();
 			subCodeLength += securityAttributesReferenced.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -399,7 +400,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 			efFileSize = new BerOctetString();
 			subCodeLength += efFileSize.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -408,7 +409,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 6)) {
 			pinStatusTemplateDO = new BerOctetString();
 			subCodeLength += pinStatusTemplateDO.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -417,7 +418,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 			shortEFID = new BerOctetString();
 			subCodeLength += shortEFID.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -426,7 +427,7 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
 			proprietaryEFInfo = new ProprietaryInfo();
 			subCodeLength += proprietaryEFInfo.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -435,11 +436,11 @@ public class Fcp {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 			linkPath = new BerOctetString();
 			subCodeLength += linkPath.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

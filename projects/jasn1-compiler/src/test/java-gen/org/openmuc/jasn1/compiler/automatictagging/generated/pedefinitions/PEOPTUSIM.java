@@ -871,9 +871,10 @@ public class PEOPTUSIM {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -2123,7 +2124,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			templateID = new BerObjectIdentifier();
 			subCodeLength += templateID.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2135,7 +2136,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
 			efLi = new File();
 			subCodeLength += efLi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2144,7 +2145,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
 			efAcmax = new File();
 			subCodeLength += efAcmax.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2153,7 +2154,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
 			efAcm = new File();
 			subCodeLength += efAcm.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2162,7 +2163,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
 			efGid1 = new File();
 			subCodeLength += efGid1.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2171,7 +2172,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
 			efGid2 = new File();
 			subCodeLength += efGid2.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2180,7 +2181,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
 			efMsisdn = new File();
 			subCodeLength += efMsisdn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2189,7 +2190,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
 			efPuct = new File();
 			subCodeLength += efPuct.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2198,7 +2199,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
 			efCbmi = new File();
 			subCodeLength += efCbmi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2207,7 +2208,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
 			efCbmid = new File();
 			subCodeLength += efCbmid.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2216,7 +2217,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 11)) {
 			efSdn = new File();
 			subCodeLength += efSdn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2225,7 +2226,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 12)) {
 			efExt2 = new File();
 			subCodeLength += efExt2.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2234,7 +2235,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 13)) {
 			efExt3 = new File();
 			subCodeLength += efExt3.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2243,7 +2244,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 14)) {
 			efCbmir = new File();
 			subCodeLength += efCbmir.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2252,7 +2253,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 15)) {
 			efPlmnwact = new File();
 			subCodeLength += efPlmnwact.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2261,7 +2262,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 16)) {
 			efOplmnwact = new File();
 			subCodeLength += efOplmnwact.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2270,7 +2271,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 17)) {
 			efHplmnwact = new File();
 			subCodeLength += efHplmnwact.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2279,7 +2280,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 18)) {
 			efDck = new File();
 			subCodeLength += efDck.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2288,7 +2289,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 19)) {
 			efCnl = new File();
 			subCodeLength += efCnl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2297,7 +2298,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 20)) {
 			efSmsr = new File();
 			subCodeLength += efSmsr.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2306,7 +2307,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 21)) {
 			efBdn = new File();
 			subCodeLength += efBdn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2315,7 +2316,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 22)) {
 			efExt5 = new File();
 			subCodeLength += efExt5.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2324,7 +2325,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 23)) {
 			efCcp2 = new File();
 			subCodeLength += efCcp2.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2333,7 +2334,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 24)) {
 			efExt4 = new File();
 			subCodeLength += efExt4.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2342,7 +2343,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 25)) {
 			efAcl = new File();
 			subCodeLength += efAcl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2351,7 +2352,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 26)) {
 			efCmi = new File();
 			subCodeLength += efCmi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2360,7 +2361,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 27)) {
 			efIci = new File();
 			subCodeLength += efIci.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2369,7 +2370,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 28)) {
 			efOci = new File();
 			subCodeLength += efOci.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2378,7 +2379,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 29)) {
 			efIct = new File();
 			subCodeLength += efIct.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2387,7 +2388,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 30)) {
 			efOct = new File();
 			subCodeLength += efOct.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2396,7 +2397,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 31)) {
 			efVgcs = new File();
 			subCodeLength += efVgcs.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2405,7 +2406,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 32)) {
 			efVgcss = new File();
 			subCodeLength += efVgcss.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2414,7 +2415,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 33)) {
 			efVbs = new File();
 			subCodeLength += efVbs.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2423,7 +2424,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 34)) {
 			efVbss = new File();
 			subCodeLength += efVbss.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2432,7 +2433,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 35)) {
 			efEmlpp = new File();
 			subCodeLength += efEmlpp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2441,7 +2442,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 36)) {
 			efAaem = new File();
 			subCodeLength += efAaem.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2450,7 +2451,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 37)) {
 			efHiddenkey = new File();
 			subCodeLength += efHiddenkey.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2459,7 +2460,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 38)) {
 			efPnn = new File();
 			subCodeLength += efPnn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2468,7 +2469,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 39)) {
 			efOpl = new File();
 			subCodeLength += efOpl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2477,7 +2478,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 40)) {
 			efMbdn = new File();
 			subCodeLength += efMbdn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2486,7 +2487,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 41)) {
 			efExt6 = new File();
 			subCodeLength += efExt6.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2495,7 +2496,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 42)) {
 			efMbi = new File();
 			subCodeLength += efMbi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2504,7 +2505,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 43)) {
 			efMwis = new File();
 			subCodeLength += efMwis.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2513,7 +2514,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 44)) {
 			efCfis = new File();
 			subCodeLength += efCfis.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2522,7 +2523,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 45)) {
 			efExt7 = new File();
 			subCodeLength += efExt7.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2531,7 +2532,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 46)) {
 			efSpdi = new File();
 			subCodeLength += efSpdi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2540,7 +2541,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 47)) {
 			efMmsn = new File();
 			subCodeLength += efMmsn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2549,7 +2550,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 48)) {
 			efExt8 = new File();
 			subCodeLength += efExt8.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2558,7 +2559,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 49)) {
 			efMmsicp = new File();
 			subCodeLength += efMmsicp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2567,7 +2568,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 50)) {
 			efMmsup = new File();
 			subCodeLength += efMmsup.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2576,7 +2577,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 51)) {
 			efMmsucp = new File();
 			subCodeLength += efMmsucp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2585,7 +2586,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 52)) {
 			efNia = new File();
 			subCodeLength += efNia.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2594,7 +2595,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 53)) {
 			efVgcsca = new File();
 			subCodeLength += efVgcsca.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2603,7 +2604,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 54)) {
 			efVbsca = new File();
 			subCodeLength += efVbsca.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2612,7 +2613,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 55)) {
 			efGbabp = new File();
 			subCodeLength += efGbabp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2621,7 +2622,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 56)) {
 			efMsk = new File();
 			subCodeLength += efMsk.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2630,7 +2631,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 57)) {
 			efMuk = new File();
 			subCodeLength += efMuk.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2639,7 +2640,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 58)) {
 			efEhplmn = new File();
 			subCodeLength += efEhplmn.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2648,7 +2649,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 59)) {
 			efGbanl = new File();
 			subCodeLength += efGbanl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2657,7 +2658,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 60)) {
 			efEhplmnpi = new File();
 			subCodeLength += efEhplmnpi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2666,7 +2667,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 61)) {
 			efLrplmnsi = new File();
 			subCodeLength += efLrplmnsi.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2675,7 +2676,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 62)) {
 			efNafkca = new File();
 			subCodeLength += efNafkca.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2684,7 +2685,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 63)) {
 			efSpni = new File();
 			subCodeLength += efSpni.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2693,7 +2694,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 64)) {
 			efPnni = new File();
 			subCodeLength += efPnni.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2702,7 +2703,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 65)) {
 			efNcpIp = new File();
 			subCodeLength += efNcpIp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2711,7 +2712,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 66)) {
 			efUfc = new File();
 			subCodeLength += efUfc.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2720,7 +2721,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 67)) {
 			efNasconfig = new File();
 			subCodeLength += efNasconfig.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2729,7 +2730,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 68)) {
 			efUicciari = new File();
 			subCodeLength += efUicciari.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2738,7 +2739,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 69)) {
 			efPws = new File();
 			subCodeLength += efPws.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2747,7 +2748,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 70)) {
 			efFdnuri = new File();
 			subCodeLength += efFdnuri.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2756,7 +2757,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 71)) {
 			efBdnuri = new File();
 			subCodeLength += efBdnuri.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2765,7 +2766,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 72)) {
 			efSdnuri = new File();
 			subCodeLength += efSdnuri.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2774,7 +2775,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 73)) {
 			efIwl = new File();
 			subCodeLength += efIwl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2783,7 +2784,7 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 74)) {
 			efIps = new File();
 			subCodeLength += efIps.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -2792,11 +2793,11 @@ public class PEOPTUSIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 75)) {
 			efIpd = new File();
 			subCodeLength += efIpd.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

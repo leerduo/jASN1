@@ -100,9 +100,10 @@ public class ProprietaryInfo {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -165,14 +166,14 @@ public class ProprietaryInfo {
 			return codeLength;
 		}
 
-		if (length.val == 0) {
+		if (totalLength == 0) {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 			specialFileInformation = new BerOctetString();
 			subCodeLength += specialFileInformation.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -181,7 +182,7 @@ public class ProprietaryInfo {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			fillPattern = new BerOctetString();
 			subCodeLength += fillPattern.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -190,11 +191,11 @@ public class ProprietaryInfo {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 			repeatPattern = new BerOctetString();
 			subCodeLength += repeatPattern.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

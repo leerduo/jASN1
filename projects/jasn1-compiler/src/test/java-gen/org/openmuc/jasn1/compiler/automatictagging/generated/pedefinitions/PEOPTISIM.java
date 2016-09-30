@@ -176,9 +176,10 @@ public class PEOPTISIM {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -388,7 +389,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 			templateID = new BerObjectIdentifier();
 			subCodeLength += templateID.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -400,7 +401,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
 			efPcscf = new File();
 			subCodeLength += efPcscf.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -409,7 +410,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 3)) {
 			efSms = new File();
 			subCodeLength += efSms.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -418,7 +419,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
 			efSmsp = new File();
 			subCodeLength += efSmsp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -427,7 +428,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 5)) {
 			efSmss = new File();
 			subCodeLength += efSmss.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -436,7 +437,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
 			efSmsr = new File();
 			subCodeLength += efSmsr.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -445,7 +446,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 7)) {
 			efGbabp = new File();
 			subCodeLength += efGbabp.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -454,7 +455,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
 			efGbanl = new File();
 			subCodeLength += efGbanl.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -463,7 +464,7 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
 			efNafkca = new File();
 			subCodeLength += efNafkca.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -472,11 +473,11 @@ public class PEOPTISIM {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 10)) {
 			efUicciari = new File();
 			subCodeLength += efUicciari.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

@@ -73,6 +73,8 @@ public class UserData {
 			berIdentifier = new BerIdentifier();
 			codeLength += berIdentifier.decode(is);
 		}
+
+		BerLength length = new BerLength();
 		if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 			simplyEncodedData = new SimplyEncodedData();
 			codeLength += simplyEncodedData.decode(is, false);

@@ -70,7 +70,7 @@ public class PDVList {
 			}
 			
 			if (singleASN1Type != null) {
-				sublength = singleASN1Type.encode(os, true);
+				sublength = singleASN1Type.encode(os);
 				codeLength += sublength;
 				codeLength += BerLength.encodeLength(os, sublength);
 				// write tag: CONTEXT_CLASS, CONSTRUCTED, 0
@@ -91,9 +91,12 @@ public class PDVList {
 				berIdentifier = new BerIdentifier();
 				codeLength += berIdentifier.decode(is);
 			}
+
+			BerLength length = new BerLength();
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
+				codeLength += length.decode(is);
 				singleASN1Type = new BerAnyNoDecode();
-				codeLength += singleASN1Type.decode(is, false);
+				codeLength += singleASN1Type.decode(is, length.val);
 				return codeLength;
 			}
 
@@ -208,7 +211,8 @@ public class PDVList {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(TransferSyntaxName.identifier)) {
@@ -228,10 +232,10 @@ public class PDVList {
 		
 		presentationDataValues = new PresentationDataValues();
 		subCodeLength += presentationDataValues.decode(is, berIdentifier);
-		if (subCodeLength == length.val) {
+		if (subCodeLength == totalLength) {
 			return codeLength;
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

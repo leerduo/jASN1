@@ -70,15 +70,16 @@ public class ProfileHeader {
 		public int decode(InputStream is, boolean explicit) throws IOException {
 			int codeLength = 0;
 			int subCodeLength = 0;
+			BerIdentifier berIdentifier = new BerIdentifier();
 			if (explicit) {
 				codeLength += id.decodeAndCheck(is);
 			}
 
 			BerLength length = new BerLength();
 			codeLength += length.decode(is);
+			int totalLength = length.val;
 
 			if (length.val == -1) {
-				BerIdentifier berIdentifier = new BerIdentifier();
 				while (true) {
 					subCodeLength += berIdentifier.decode(is);
 
@@ -99,13 +100,13 @@ public class ProfileHeader {
 					seqOf.add(element);
 				}
 			}
-			while (subCodeLength < length.val) {
+			while (subCodeLength < totalLength) {
 				BerObjectIdentifier element = new BerObjectIdentifier();
 				subCodeLength += element.decode(is, true);
 				seqOf.add(element);
 			}
-			if (subCodeLength != length.val) {
-				throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+			if (subCodeLength != totalLength) {
+				throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 			}
 			codeLength += subCodeLength;
@@ -264,9 +265,10 @@ public class ProfileHeader {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -476,7 +478,7 @@ public class ProfileHeader {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
 			eUICCMandatoryGFSTEList = new EUICCMandatoryGFSTEList();
 			subCodeLength += eUICCMandatoryGFSTEList.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -488,11 +490,11 @@ public class ProfileHeader {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 			connectivityParameters = new BerOctetString();
 			subCodeLength += connectivityParameters.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

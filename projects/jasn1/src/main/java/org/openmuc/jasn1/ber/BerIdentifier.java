@@ -48,6 +48,7 @@ public class BerIdentifier {
     public static final int TELETEX_STRING_TAG = 20;
     public static final int VIDEOTEX_STRING_TAG = 21;
     public static final int IA5_STRING_TAG = 22;
+    public static final int UTC_TIME_TAG = 23;
     public static final int GENERALIZED_TIME_TAG = 24;
     public static final int GRAPHIC_STRING_TAG = 25;
     public static final int VISIBLE_STRING_TAG = 26;

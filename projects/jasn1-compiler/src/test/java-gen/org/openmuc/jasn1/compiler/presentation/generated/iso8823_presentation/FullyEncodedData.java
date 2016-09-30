@@ -68,20 +68,22 @@ public class FullyEncodedData {
 	public int decode(InputStream is, boolean explicit) throws IOException {
 		int codeLength = 0;
 		int subCodeLength = 0;
+		BerIdentifier berIdentifier = new BerIdentifier();
 		if (explicit) {
 			codeLength += id.decodeAndCheck(is);
 		}
 
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
+		int totalLength = length.val;
 
-		while (subCodeLength < length.val) {
+		while (subCodeLength < totalLength) {
 			PDVList element = new PDVList();
 			subCodeLength += element.decode(is, true);
 			seqOf.add(element);
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+		if (subCodeLength != totalLength) {
+			throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

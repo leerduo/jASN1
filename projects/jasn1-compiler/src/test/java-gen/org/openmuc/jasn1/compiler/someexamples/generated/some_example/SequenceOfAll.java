@@ -134,7 +134,7 @@ public class SequenceOfAll {
 			
 			codeLength += mySequence.encode(os, true);
 			
-			sublength = any.encode(os, true);
+			sublength = any.encode(os);
 			codeLength += sublength;
 			codeLength += BerLength.encodeLength(os, sublength);
 			// write tag: CONTEXT_CLASS, CONSTRUCTED, 9
@@ -221,9 +221,10 @@ public class SequenceOfAll {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -691,8 +692,9 @@ public class SequenceOfAll {
 				return codeLength;
 			}
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
+				codeLength += length.decode(is);
 				any = new BerAny();
-				subCodeLength += any.decode(is, false);
+				subCodeLength += any.decode(is, length.val);
 				subCodeLength += berIdentifier.decode(is);
 			}
 			else {
@@ -965,8 +967,9 @@ public class SequenceOfAll {
 		}
 		
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
+			codeLength += length.decode(is);
 			any = new BerAny();
-			subCodeLength += any.decode(is, false);
+			subCodeLength += any.decode(is, length.val);
 			subCodeLength += berIdentifier.decode(is);
 		}
 		else {
@@ -984,10 +987,10 @@ public class SequenceOfAll {
 		
 		myChoice = new MyChoice();
 		subCodeLength += myChoice.decode(is, berIdentifier);
-		if (subCodeLength == length.val) {
+		if (subCodeLength == totalLength) {
 			return codeLength;
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

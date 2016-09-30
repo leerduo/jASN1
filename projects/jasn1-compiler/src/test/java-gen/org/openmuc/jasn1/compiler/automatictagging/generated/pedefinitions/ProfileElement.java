@@ -373,6 +373,8 @@ public class ProfileElement {
 			berIdentifier = new BerIdentifier();
 			codeLength += berIdentifier.decode(is);
 		}
+
+		BerLength length = new BerLength();
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
 			header = new ProfileHeader();
 			codeLength += header.decode(is, false);

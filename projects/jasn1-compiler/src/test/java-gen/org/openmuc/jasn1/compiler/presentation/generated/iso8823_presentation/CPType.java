@@ -149,16 +149,17 @@ public class CPType {
 			BerLength length = new BerLength();
 			codeLength += length.decode(is);
 
-			codeLength += length.val;
+			int totalLength = length.val;
+			codeLength += totalLength;
 
-			if (length.val == 0) {
+			if (totalLength == 0) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				protocolVersion = new ProtocolVersion();
 				subCodeLength += protocolVersion.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -167,7 +168,7 @@ public class CPType {
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
 				callingPresentationSelector = new CallingPresentationSelector();
 				subCodeLength += callingPresentationSelector.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -176,7 +177,7 @@ public class CPType {
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
 				calledPresentationSelector = new CalledPresentationSelector();
 				subCodeLength += calledPresentationSelector.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -185,7 +186,7 @@ public class CPType {
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 4)) {
 				presentationContextDefinitionList = new PresentationContextDefinitionList();
 				subCodeLength += presentationContextDefinitionList.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -194,7 +195,7 @@ public class CPType {
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 6)) {
 				defaultContextName = new DefaultContextName();
 				subCodeLength += defaultContextName.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -203,7 +204,7 @@ public class CPType {
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 				presentationRequirements = new PresentationRequirements();
 				subCodeLength += presentationRequirements.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -212,7 +213,7 @@ public class CPType {
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 9)) {
 				userSessionRequirements = new UserSessionRequirements();
 				subCodeLength += userSessionRequirements.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 				subCodeLength += berIdentifier.decode(is);
@@ -221,10 +222,10 @@ public class CPType {
 			userData = new UserData();
 			int choiceDecodeLength = userData.decode(is, berIdentifier);
 			subCodeLength += choiceDecodeLength;
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
-			throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+			throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 			
 		}
@@ -375,7 +376,8 @@ public class CPType {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		while (subCodeLength < length.val) {
+		int totalLength = length.val;
+		while (subCodeLength < totalLength) {
 			subCodeLength += berIdentifier.decode(is);
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
 				modeSelector = new ModeSelector();
@@ -386,8 +388,8 @@ public class CPType {
 				subCodeLength += normalModeParameters.decode(is, false);
 			}
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Length of set does not match length tag, length tag: " + length.val + ", actual set length: " + subCodeLength);
+		if (subCodeLength != totalLength) {
+			throw new IOException("Length of set does not match length tag, length tag: " + totalLength + ", actual set length: " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

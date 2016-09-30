@@ -69,6 +69,8 @@ public class TestChoice {
 			berIdentifier = new BerIdentifier();
 			codeLength += berIdentifier.decode(is);
 		}
+
+		BerLength length = new BerLength();
 		if (berIdentifier.equals(ChildInformation.identifier)) {
 			choiceElement1 = new ChildInformation();
 			codeLength += choiceElement1.decode(is, false);

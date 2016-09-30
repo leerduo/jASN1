@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.openmuc.jasn1.ber.BerByteArrayOutputStream;
-import org.openmuc.jasn1.ber.BerLength;
 
 public class BerAnyNoDecode {
 
@@ -37,20 +36,12 @@ public class BerAnyNoDecode {
         this.length = length;
     }
 
-    public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {
-        if (!explicit) {
-            return length + BerLength.encodeLength(os, length);
-        }
+    public int encode(BerByteArrayOutputStream os) throws IOException {
         return length;
     }
 
-    public int decode(InputStream is, boolean explicit) throws IOException {
-
-        BerLength length = new BerLength();
-        int codeLength = length.decode(is);
-        this.length = length.val;
-
-        return codeLength + length.val;
+    public int decode(InputStream is, int length) throws IOException {
+        return length;
 
     }
 

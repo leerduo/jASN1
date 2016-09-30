@@ -67,6 +67,8 @@ public class MyChoice {
 			berIdentifier = new BerIdentifier();
 			codeLength += berIdentifier.decode(is);
 		}
+
+		BerLength length = new BerLength();
 		myChoice2 = new MyChoice2();
 		int choiceDecodeLength = myChoice2.decode(is, berIdentifier);
 		if (choiceDecodeLength != 0) {

@@ -170,9 +170,10 @@ public class ApplicationSystemParameters {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
@@ -347,14 +348,14 @@ public class ApplicationSystemParameters {
 			return codeLength;
 		}
 
-		if (length.val == 0) {
+		if (totalLength == 0) {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 7)) {
 			volatileMemoryQuotaC7 = new BerOctetString();
 			subCodeLength += volatileMemoryQuotaC7.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -363,7 +364,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 8)) {
 			nonVolatileMemoryQuotaC8 = new BerOctetString();
 			subCodeLength += nonVolatileMemoryQuotaC8.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -372,7 +373,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 11)) {
 			globalServiceParameters = new BerOctetString();
 			subCodeLength += globalServiceParameters.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -381,7 +382,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 15)) {
 			implicitSelectionParameter = new BerOctetString();
 			subCodeLength += implicitSelectionParameter.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -390,7 +391,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 23)) {
 			volatileReservedMemory = new BerOctetString();
 			subCodeLength += volatileReservedMemory.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -399,7 +400,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 24)) {
 			nonVolatileReservedMemory = new BerOctetString();
 			subCodeLength += nonVolatileReservedMemory.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -408,7 +409,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 10)) {
 			ts102226SIMFileAccessToolkitParameter = new BerOctetString();
 			subCodeLength += ts102226SIMFileAccessToolkitParameter.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -417,7 +418,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
 			ts102226AdditionalContactlessParameters = new TS102226AdditionalContactlessParameters();
 			subCodeLength += ts102226AdditionalContactlessParameters.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -426,7 +427,7 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 25)) {
 			contactlessProtocolParameters = new BerOctetString();
 			subCodeLength += contactlessProtocolParameters.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 			subCodeLength += berIdentifier.decode(is);
@@ -435,11 +436,11 @@ public class ApplicationSystemParameters {
 		if (berIdentifier.equals(BerIdentifier.PRIVATE_CLASS, BerIdentifier.PRIMITIVE, 26)) {
 			userInteractionContactlessParameters = new BerOctetString();
 			subCodeLength += userInteractionContactlessParameters.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}

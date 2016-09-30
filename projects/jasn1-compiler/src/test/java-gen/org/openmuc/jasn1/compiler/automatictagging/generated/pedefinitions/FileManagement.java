@@ -96,6 +96,8 @@ public class FileManagement {
 				berIdentifier = new BerIdentifier();
 				codeLength += berIdentifier.decode(is);
 			}
+
+			BerLength length = new BerLength();
 			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 				filePath = new BerOctetString();
 				codeLength += filePath.decode(is, false);
@@ -204,15 +206,16 @@ public class FileManagement {
 	public int decode(InputStream is, boolean explicit) throws IOException {
 		int codeLength = 0;
 		int subCodeLength = 0;
+		BerIdentifier berIdentifier = new BerIdentifier();
 		if (explicit) {
 			codeLength += id.decodeAndCheck(is);
 		}
 
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
+		int totalLength = length.val;
 
 		if (length.val == -1) {
-			BerIdentifier berIdentifier = new BerIdentifier();
 			while (true) {
 				subCodeLength += berIdentifier.decode(is);
 
@@ -233,13 +236,13 @@ public class FileManagement {
 				seqOf.add(element);
 			}
 		}
-		while (subCodeLength < length.val) {
+		while (subCodeLength < totalLength) {
 			CHOICE element = new CHOICE();
 			subCodeLength += element.decode(is, null);
 			seqOf.add(element);
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+		if (subCodeLength != totalLength) {
+			throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

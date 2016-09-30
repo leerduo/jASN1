@@ -72,20 +72,22 @@ public class ContextList {
 			public int decode(InputStream is, boolean explicit) throws IOException {
 				int codeLength = 0;
 				int subCodeLength = 0;
+				BerIdentifier berIdentifier = new BerIdentifier();
 				if (explicit) {
 					codeLength += id.decodeAndCheck(is);
 				}
 
 				BerLength length = new BerLength();
 				codeLength += length.decode(is);
+				int totalLength = length.val;
 
-				while (subCodeLength < length.val) {
+				while (subCodeLength < totalLength) {
 					TransferSyntaxName element = new TransferSyntaxName();
 					subCodeLength += element.decode(is, true);
 					seqOf.add(element);
 				}
-				if (subCodeLength != length.val) {
-					throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+				if (subCodeLength != totalLength) {
+					throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 				}
 				codeLength += subCodeLength;
@@ -189,7 +191,8 @@ public class ContextList {
 			BerLength length = new BerLength();
 			codeLength += length.decode(is);
 
-			codeLength += length.val;
+			int totalLength = length.val;
+			codeLength += totalLength;
 
 			subCodeLength += berIdentifier.decode(is);
 			if (berIdentifier.equals(PresentationContextIdentifier.identifier)) {
@@ -213,11 +216,11 @@ public class ContextList {
 			if (berIdentifier.equals(TransferSyntaxNameList.identifier)) {
 				transferSyntaxNameList = new TransferSyntaxNameList();
 				subCodeLength += transferSyntaxNameList.decode(is, false);
-				if (subCodeLength == length.val) {
+				if (subCodeLength == totalLength) {
 					return codeLength;
 				}
 			}
-			throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+			throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 			
 		}
@@ -294,20 +297,22 @@ public class ContextList {
 	public int decode(InputStream is, boolean explicit) throws IOException {
 		int codeLength = 0;
 		int subCodeLength = 0;
+		BerIdentifier berIdentifier = new BerIdentifier();
 		if (explicit) {
 			codeLength += id.decodeAndCheck(is);
 		}
 
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
+		int totalLength = length.val;
 
-		while (subCodeLength < length.val) {
+		while (subCodeLength < totalLength) {
 			SEQUENCE element = new SEQUENCE();
 			subCodeLength += element.decode(is, true);
 			seqOf.add(element);
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Decoded SequenceOf or SetOf has wrong length tag");
+		if (subCodeLength != totalLength) {
+			throw new IOException("Decoded SequenceOf or SetOf has wrong length. Expected " + totalLength + " but has " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

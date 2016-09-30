@@ -51,7 +51,6 @@ import org.openmuc.jasn1.compiler.model.AsnSequenceSet;
 import org.openmuc.jasn1.compiler.model.AsnTag;
 import org.openmuc.jasn1.compiler.model.AsnTaggedType;
 import org.openmuc.jasn1.compiler.model.AsnType;
-import org.openmuc.jasn1.compiler.model.AsnTypes;
 import org.openmuc.jasn1.compiler.model.AsnUniversalType;
 import org.openmuc.jasn1.compiler.model.SymbolsFromModule;
 
@@ -70,7 +69,7 @@ public class BerClassWriter {
     private File outputDirectory;
 
     BerClassWriter(HashMap<String, AsnModule> modulesByName, String outputBaseDir, String basePackageName,
-                   boolean jaxbMode, boolean supportIndefiniteLength) throws IOException {
+            boolean jaxbMode, boolean supportIndefiniteLength) throws IOException {
         this.supportIndefiniteLength = supportIndefiniteLength;
         this.jaxbMode = jaxbMode;
         this.outputBaseDir = outputBaseDir;
@@ -100,8 +99,6 @@ public class BerClassWriter {
 
         this.module = module;
 
-        AsnTypes asnTypes = module.asnTypes;
-
         if (module.tagDefault.equals("IMPLICIT")) {
             isDefaultTagExplicit = false;
         }
@@ -110,7 +107,7 @@ public class BerClassWriter {
             automaticTagging = true;
         }
 
-        for (AsnType typeDefinition : asnTypes.typesByName.values()) {
+        for (AsnType typeDefinition : module.typesByName.values()) {
 
             String typeName = cleanUpName(typeDefinition.name);
 
@@ -191,7 +188,7 @@ public class BerClassWriter {
     }
 
     private void writeConstructedTypeClass(AsnType asnType, String tagNum, String tagClass, String className,
-                                           boolean asInternalClass) throws IOException {
+            boolean asInternalClass) throws IOException {
         if (asnType instanceof AsnSequenceSet) {
             writeSequenceOrSetClass((AsnSequenceSet) asnType, tagNum, tagClass, className, asInternalClass);
         }
@@ -204,7 +201,7 @@ public class BerClassWriter {
     }
 
     private void writeChoiceClass(AsnChoice asn1TypeElement, String tagNum, String tagClass, String className,
-                                  boolean asInternalClass) throws IOException {
+            boolean asInternalClass) throws IOException {
 
         if (className.isEmpty()) {
             className = cleanUpName(asn1TypeElement.name);
@@ -285,30 +282,30 @@ public class BerClassWriter {
         write("if (berIdentifier == null) {");
         write("berIdentifier = new BerIdentifier();");
         write("codeLength += berIdentifier.decode(is);");
-        write("}");
+        write("}\n");
+
+        write("BerLength length = new BerLength();");
 
         String initChoiceDecodeLength = "int ";
 
         for (int j = 0; j < sequenceElements.size(); j++) {
             AsnElementType sequenceElement = sequenceElements.get(j);
 
-            String explicitEncoding = "false";
+            String explicitEncoding = ", false";
             if (hasTag(sequenceElement)) {
 
                 if (getUniversalType(sequenceElement) instanceof AsnChoice) {
 
-                    if (hasExplicitTag(sequenceElement)) {
-                        write("if (berIdentifier.equals(BerIdentifier." + getTagClass(sequenceElement)
-                                + ", BerIdentifier.CONSTRUCTED" + ", " + getTagNum(sequenceElement) + ")) {");
+                    write("if (berIdentifier.equals(BerIdentifier." + getTagClass(sequenceElement)
+                            + ", BerIdentifier.CONSTRUCTED" + ", " + getTagNum(sequenceElement) + ")) {");
 
-                        write("codeLength += new BerLength().decode(is);");
-                        explicitEncoding = "null";
+                    if (hasExplicitTag(sequenceElement)) {
+                        write("codeLength += length.decode(is);");
+                        explicitEncoding = ", null";
                     }
                     else {
-                        throw new IOException("Element \"" + getSequenceElementName(sequenceElement)
-                                + " is a CHOICE and has an implicit tag\"");
+                        explicitEncoding = ", berIdentifier";
                     }
-
                 }
                 else {
 
@@ -321,17 +318,14 @@ public class BerClassWriter {
                                 + ", BerIdentifier.PRIMITIVE" + ", " + getTagNum(sequenceElement) + ")) {");
                     }
 
-                    if ((getUniversalType(sequenceElement) instanceof AsnAny)
-                            || (getUniversalType(sequenceElement) instanceof AsnAnyNoDecode)) {
-                        if (!hasExplicitTag(sequenceElement)) {
-                            throw new IOException(
-                                    "ANY within CHOICE has no tag: " + getClassNameOfStructureElement(sequenceElement));
+                    if (hasExplicitTag(sequenceElement)) {
+                        write("codeLength += length.decode(is);");
+                        if (isDirectAny(sequenceElement)) {
+                            explicitEncoding = ", length.val";
                         }
-                    }
-                    else if (hasExplicitTag(sequenceElement)) {
-
-                        write("codeLength += new BerLength().decode(is);");
-                        explicitEncoding = "true";
+                        else {
+                            explicitEncoding = ", true";
+                        }
                     }
 
                 }
@@ -339,7 +333,7 @@ public class BerClassWriter {
                 write(getSequenceElementName(sequenceElement) + " = new "
                         + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                write("codeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, " + explicitEncoding
+                write("codeLength += " + getSequenceElementName(sequenceElement) + ".decode(is" + explicitEncoding
                         + ");");
 
                 write("return codeLength;");
@@ -360,13 +354,13 @@ public class BerClassWriter {
                             + getClassNameOfStructureElement(sequenceElement)
                             + " You could consider integrating the inner CHOICE in the parent CHOICE in order to reduce the number of Java classes/objects.");
 
-                    explicitEncoding = "berIdentifier";
+                    explicitEncoding = ", berIdentifier";
 
                     write(getSequenceElementName(sequenceElement) + " = new "
                             + getClassNameOfStructureElement(sequenceElement) + "();");
 
                     write(initChoiceDecodeLength + "choiceDecodeLength = " + getSequenceElementName(sequenceElement)
-                            + ".decode(is, " + explicitEncoding + ");");
+                            + ".decode(is" + explicitEncoding + ");");
                     initChoiceDecodeLength = "";
                     write("if (choiceDecodeLength != 0) {");
                     write("codeLength += choiceDecodeLength;");
@@ -385,7 +379,7 @@ public class BerClassWriter {
                     write(getSequenceElementName(sequenceElement) + " = new "
                             + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                    write("codeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, " + explicitEncoding
+                    write("codeLength += " + getSequenceElementName(sequenceElement) + ".decode(is" + explicitEncoding
                             + ");");
 
                     write("return codeLength;");
@@ -431,18 +425,24 @@ public class BerClassWriter {
 
             write("if (" + getSequenceElementName(choiceElement) + " != null) {");
 
-            String explicitEncoding = "true";
+            String explicitEncoding = ", true";
             if (hasImplicitTag(choiceElement)) {
-                explicitEncoding = "false";
+                explicitEncoding = ", false";
             }
 
             if (hasExplicitTag(choiceElement)) {
-                write("sublength = " + getSequenceElementName(choiceElement) + ".encode(os, " + "true" + ");");
+                if (isDirectAny(choiceElement)) {
+                    explicitEncoding = "";
+                }
+                else {
+                    explicitEncoding = ", true";
+                }
+                write("sublength = " + getSequenceElementName(choiceElement) + ".encode(os" + explicitEncoding + ");");
                 write("codeLength += sublength;");
                 write("codeLength += BerLength.encodeLength(os, sublength);");
             }
             else {
-                write("codeLength += " + getSequenceElementName(choiceElement) + ".encode(os, " + explicitEncoding
+                write("codeLength += " + getSequenceElementName(choiceElement) + ".encode(os" + explicitEncoding
                         + ");");
             }
 
@@ -470,7 +470,7 @@ public class BerClassWriter {
     }
 
     private void writeSequenceOfClass(AsnSequenceOf asnSequenceOf, String tagNum, String tagClass, String className,
-                                      boolean asInternalClass) throws IOException {
+            boolean asInternalClass) throws IOException {
 
         if (tagClass.isEmpty()) {
             tagClass = "UNIVERSAL_CLASS";
@@ -494,9 +494,7 @@ public class BerClassWriter {
 
         write("public" + isStaticStr + " class " + className + " {\n");
 
-        AsnType subElementRef = (AsnType) asnSequenceOf.typeReference;
-
-        // Element subElementRef = (Element) xPath.evaluate("typeReference", asnSequenceOf, XPathConstants.NODE);
+        AsnType subElementRef = asnSequenceOf.typeReference;
 
         String referencedTypeName = getClassNameOfSequenceOfElement(asnSequenceOf);
 
@@ -538,9 +536,9 @@ public class BerClassWriter {
             writeGetterForSeqOf(referencedTypeName);
         }
 
-        writeSequenceOfEncodeFunction();
+        writeSequenceOfEncodeFunction(asnSequenceOf);
 
-        writeSequenceOfDecodeFunction(asnSequenceOf, referencedTypeName);
+        writeSequenceOfDecodeFunction(asnSequenceOf);
 
         writeEncodeAndSaveFunction();
 
@@ -575,23 +573,24 @@ public class BerClassWriter {
 
     }
 
-    private void writeSequenceOfDecodeFunction(AsnSequenceOf element, String referencedTypeName) throws IOException {
+    private void writeSequenceOfDecodeFunction(AsnSequenceOf element) throws IOException {
         write("public int decode(InputStream is, boolean explicit) throws IOException {");
         write("int codeLength = 0;");
         write("int subCodeLength = 0;");
+        write("BerIdentifier berIdentifier = new BerIdentifier();");
 
         write("if (explicit) {");
         write("codeLength += id.decodeAndCheck(is);");
         write("}\n");
 
         write("BerLength length = new BerLength();");
-        write("codeLength += length.decode(is);\n");
+        write("codeLength += length.decode(is);");
+        write("int totalLength = length.val;\n");
 
         // indefinite length
         if (supportIndefiniteLength == true) {
 
             write("if (length.val == -1) {");
-            write("BerIdentifier berIdentifier = new BerIdentifier();");
             write("while (true) {");
             write("subCodeLength += berIdentifier.decode(is);\n");
 
@@ -607,19 +606,15 @@ public class BerClassWriter {
             write("return codeLength;");
             write("}\n");
 
-            write(referencedTypeName + " element = new " + referencedTypeName + "();");
+            write(getClassNameOfSequenceOfElement(element) + " element = new "
+                    + getClassNameOfSequenceOfElement(element) + "();");
 
-            AsnType asnType;
-
-            if (element.typeReference != null) {
-                asnType = getUniversalType((AsnType) (element.typeReference));
-            }
-            else {
-                asnType = getUniversalType(element.typeName);
-            }
-
-            if (asnType instanceof AsnChoice) {
+            if (isDirectChoice(element)) {
                 write("subCodeLength += element.decode(is, berIdentifier);");
+            }
+            else if (isDirectAny(element)) {
+                write("subCodeLength += length.decode(is);");
+                write("subCodeLength += element.decode(is, length.val);");
             }
             else {
                 write("subCodeLength += element.decode(is, false);");
@@ -632,29 +627,52 @@ public class BerClassWriter {
         }
 
         // definite length
-        write("while (subCodeLength < length.val) {");
+        write("while (subCodeLength < totalLength) {");
         write(getClassNameOfSequenceOfElement(element) + " element = new " + getClassNameOfSequenceOfElement(element)
                 + "();");
 
-        AsnType asnType;
+        if (element.typeReference != null && element.typeReference instanceof AsnTaggedType) {
 
-        if (element.typeReference != null) {
-            asnType = getUniversalType((AsnType) (element.typeReference));
+            String explicitEncoding;
+
+            AsnTaggedType sequenceElement = (AsnTaggedType) element.typeReference;
+            if (hasExplicitTag(sequenceElement)) {
+                write("subCodeLength += berIdentifier.decode(is);");
+                write("subCodeLength += length.decode(is);");
+                explicitEncoding = ", true";
+            }
+            else {
+                write("subCodeLength += berIdentifier.decode(is);");
+                if (isDirectChoice(element)) {
+                    explicitEncoding = ", berIdentifier";
+                }
+                else if (isDirectAny(element)) {
+                    explicitEncoding = "";
+                }
+                else {
+                    explicitEncoding = ", false";
+                }
+            }
+            write("subCodeLength += element.decode(is" + explicitEncoding + ");");
         }
         else {
-            asnType = getUniversalType(getTypeDefinition(element.typeName));
-        }
 
-        if (asnType instanceof AsnChoice) {
-            write("subCodeLength += element.decode(is, null);");
-        }
-        else {
-            write("subCodeLength += element.decode(is, true);");
+            if (isDirectChoice(element)) {
+                write("subCodeLength += element.decode(is, null);");
+            }
+            else if (isDirectAny(element)) {
+                write("subCodeLength += new BerIdentifier().decode(is);");
+                write("subCodeLength += length.decode(is);");
+                write("subCodeLength += element.decode(is, length.val);");
+            }
+            else {
+                write("subCodeLength += element.decode(is, true);");
+            }
         }
         write("seqOf.add(element);");
         write("}");
-        write("if (subCodeLength != length.val) {");
-        write("throw new IOException(\"Decoded SequenceOf or SetOf has wrong length tag\");\n");
+        write("if (subCodeLength != totalLength) {");
+        write("throw new IOException(\"Decoded SequenceOf or SetOf has wrong length. Expected \" + totalLength + \" but has \" + subCodeLength);\n");
         write("}");
         write("codeLength += subCodeLength;\n");
 
@@ -663,7 +681,7 @@ public class BerClassWriter {
 
     }
 
-    private void writeSequenceOfEncodeFunction() throws IOException {
+    private void writeSequenceOfEncodeFunction(AsnSequenceOf element) throws IOException {
         write("public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {");
         write("int codeLength;\n");
 
@@ -678,7 +696,51 @@ public class BerClassWriter {
         write("codeLength = 0;");
 
         write("for (int i = (seqOf.size() - 1); i >= 0; i--) {");
-        write("codeLength += seqOf.get(i).encode(os, true);");
+        if (element.typeReference != null && element.typeReference instanceof AsnTaggedType) {
+
+            AsnTaggedType sequenceElement = (AsnTaggedType) element.typeReference;
+
+            String explicitEncoding = ", true";
+            if (hasImplicitTag(sequenceElement)) {
+                explicitEncoding = ", false";
+            }
+            if (isDirectAny(sequenceElement)) {
+                explicitEncoding = "";
+            }
+
+            if (hasExplicitTag(sequenceElement)) {
+                write("int sublength = seqOf.get(i).encode(os" + explicitEncoding + ");");
+                write("codeLength += sublength;");
+                write("codeLength += BerLength.encodeLength(os, sublength);");
+            }
+            else {
+                write("codeLength += seqOf.get(i).encode(os" + explicitEncoding + ");");
+            }
+
+            if (hasTag(sequenceElement)) {
+                if (hasExplicitTag(sequenceElement) || !isPrimitive(sequenceElement)) {
+                    writeEncodeIdentifier(getTagClass(sequenceElement), "CONSTRUCTED", getTagNum(sequenceElement));
+                }
+                else {
+                    if (getUniversalType(sequenceElement) instanceof AsnAnyNoDecode) {
+                        writeEncodeIdentifier("UNIVERSAL_CLASS", "PRIMITIVE", getTagNum(sequenceElement));
+                    }
+                    else {
+                        writeEncodeIdentifier(getTagClass(sequenceElement), "PRIMITIVE", getTagNum(sequenceElement));
+                    }
+                }
+            }
+        }
+        else {
+
+            if (isDirectAny(element)) {
+                write("codeLength += seqOf.get(i).encode(os);");
+            }
+            else {
+                write("codeLength += seqOf.get(i).encode(os, true);");
+            }
+        }
+
         write("}\n");
 
         write("codeLength += BerLength.encodeLength(os, codeLength);\n");
@@ -695,7 +757,7 @@ public class BerClassWriter {
     }
 
     private void writeSequenceOrSetClass(AsnSequenceSet asnSequenceSet, String tagNum, String tagClass,
-                                         String className, boolean asInternalClass) throws IOException {
+            String className, boolean asInternalClass) throws IOException {
 
         if (tagClass.isEmpty()) {
             tagClass = "UNIVERSAL_CLASS";
@@ -705,6 +767,7 @@ public class BerClassWriter {
                 tagNum = "16";
             }
             else {
+                // is SET
                 tagNum = "17";
             }
         }
@@ -812,8 +875,9 @@ public class BerClassWriter {
         write("}\n");
         write("BerLength length = new BerLength();");
         write("codeLength += length.decode(is);\n");
+        write("int totalLength = length.val;");
 
-        write("while (subCodeLength < length.val) {");
+        write("while (subCodeLength < totalLength) {");
         write("subCodeLength += berIdentifier.decode(is);");
 
         for (int j = 0; j < sequenceElements.size(); j++) {
@@ -897,8 +961,8 @@ public class BerClassWriter {
 
         write("}");
 
-        write("if (subCodeLength != length.val) {");
-        write("throw new IOException(\"Length of set does not match length tag, length tag: \" + length.val + \", actual set length: \" + subCodeLength);\n");
+        write("if (subCodeLength != totalLength) {");
+        write("throw new IOException(\"Length of set does not match length tag, length tag: \" + totalLength + \", actual set length: \" + subCodeLength);\n");
         write("}");
         write("codeLength += subCodeLength;\n");
 
@@ -917,13 +981,14 @@ public class BerClassWriter {
         write("}\n");
         write("BerLength length = new BerLength();");
         write("codeLength += length.decode(is);\n");
-        write("codeLength += length.val;\n");
+        write("int totalLength = length.val;");
+        write("codeLength += totalLength;\n");
 
         // indefinite length
 
         if (supportIndefiniteLength == true) {
 
-            write("if (length.val == -1) {");
+            write("if (totalLength == -1) {");
             write("subCodeLength += berIdentifier.decode(is);\n");
 
             String initChoiceDecodeLength = "int ";
@@ -949,7 +1014,7 @@ public class BerClassWriter {
                         write("if (berIdentifier.equals(BerIdentifier." + getTagClass(sequenceElement)
                                 + ", BerIdentifier.CONSTRUCTED" + ", " + getTagNum(sequenceElement) + ")) {");
 
-                        write("subCodeLength += new BerLength().decode(is);");
+                        write("subCodeLength += length.decode(is);");
                         explicitEncoding = "null";
                     }
                     else {
@@ -978,7 +1043,7 @@ public class BerClassWriter {
                 }
                 else {
 
-                    explicitEncoding = "false";
+                    explicitEncoding = ", false";
 
                     if (hasTag(sequenceElement)) {
                         if (hasExplicitTag(sequenceElement) || !isPrimitive(sequenceElement)) {
@@ -995,16 +1060,14 @@ public class BerClassWriter {
                                     + ", BerIdentifier.PRIMITIVE" + ", " + getTagNum(sequenceElement) + ")) {");
                         }
 
-                        if ((getUniversalType(sequenceElement) instanceof AsnAny)
-                                || (getUniversalType(sequenceElement) instanceof AsnAnyNoDecode)) {
-                            if (!hasExplicitTag(sequenceElement)) {
-                                throw new IOException("ANY within SEQUENCE has no tag: "
-                                        + getClassNameOfStructureElement(sequenceElement));
+                        if (hasExplicitTag(sequenceElement)) {
+                            write("codeLength += length.decode(is);");
+                            if (isDirectAny(sequenceElement)) {
+                                explicitEncoding = ", length.val";
                             }
-                        }
-                        else if (hasExplicitTag(sequenceElement)) {
-                            write("subCodeLength += new BerLength().decode(is);");
-                            explicitEncoding = "true";
+                            else {
+                                explicitEncoding = ", true";
+                            }
                         }
                     }
                     else {
@@ -1015,7 +1078,7 @@ public class BerClassWriter {
                     write(getSequenceElementName(sequenceElement) + " = new "
                             + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                    write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, "
+                    write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is"
                             + explicitEncoding + ");");
 
                     write("subCodeLength += berIdentifier.decode(is);");
@@ -1060,7 +1123,7 @@ public class BerClassWriter {
         }
 
         if (lastNoneOptionalFieldIndex == -1) {
-            write("if (length.val == 0) {");
+            write("if (totalLength == 0) {");
             write("return codeLength;");
             write("}");
         }
@@ -1079,7 +1142,7 @@ public class BerClassWriter {
                     write("if (berIdentifier.equals(BerIdentifier." + getTagClass(sequenceElement)
                             + ", BerIdentifier.CONSTRUCTED" + ", " + getTagNum(sequenceElement) + ")) {");
 
-                    write("subCodeLength += new BerLength().decode(is);");
+                    write("subCodeLength += length.decode(is);");
                     explicitEncoding = "null";
                 }
                 else {
@@ -1102,7 +1165,7 @@ public class BerClassWriter {
                         write("subCodeLength += choiceDecodeLength;");
 
                         if (lastNoneOptionalFieldIndex <= j) {
-                            write("if (subCodeLength == length.val) {");
+                            write("if (subCodeLength == totalLength) {");
                             write("return codeLength;");
                             write("}");
                         }
@@ -1116,7 +1179,7 @@ public class BerClassWriter {
                     else {
                         // if last sequence element
                         write("subCodeLength += choiceDecodeLength;");
-                        write("if (subCodeLength == length.val) {");
+                        write("if (subCodeLength == totalLength) {");
                         write("return codeLength;");
                         write("}");
                     }
@@ -1126,14 +1189,14 @@ public class BerClassWriter {
                             + explicitEncoding + ");");
                     if (j != (sequenceElements.size() - 1)) {
                         if (lastNoneOptionalFieldIndex <= j) {
-                            write("if (subCodeLength == length.val) {");
+                            write("if (subCodeLength == totalLength) {");
                             write("return codeLength;");
                             write("}");
                         }
                         write("subCodeLength += berIdentifier.decode(is);");
                     }
                     else {
-                        write("if (subCodeLength == length.val) {");
+                        write("if (subCodeLength == totalLength) {");
                         write("return codeLength;");
                         write("}");
                     }
@@ -1144,7 +1207,7 @@ public class BerClassWriter {
                 }
 
                 if (j == (sequenceElements.size() - 1)) {
-                    write("throw new IOException(\"Unexpected end of sequence, length tag: \" + length.val + \", actual sequence length: \" + subCodeLength);\n");
+                    write("throw new IOException(\"Unexpected end of sequence, length tag: \" + totalLength + \", actual sequence length: \" + subCodeLength);\n");
                 }
                 else if (hasExplicitTag(sequenceElement) && !isOptional(sequenceElement)) {
                     write("else {");
@@ -1153,9 +1216,16 @@ public class BerClassWriter {
                 }
 
             }
+            else if (isTaglessAny(sequenceElement)) {
+                write(getSequenceElementName(sequenceElement) + " = new "
+                        + getClassNameOfStructureElement(sequenceElement) + "();");
+                write("subCodeLength += " + getSequenceElementName(sequenceElement)
+                        + ".decode(is, totalLength - subCodeLength);");
+                write("return codeLength;");
+            }
             else {
 
-                explicitEncoding = "false";
+                explicitEncoding = ", false";
 
                 if (hasTag(sequenceElement)) {
                     if (hasExplicitTag(sequenceElement) || !isPrimitive(sequenceElement)) {
@@ -1173,10 +1243,14 @@ public class BerClassWriter {
                         }
                     }
 
-                    if (hasExplicitTag(sequenceElement) && !(getUniversalType(sequenceElement) instanceof AsnAny)
-                            && !(getUniversalType(sequenceElement) instanceof AsnAnyNoDecode)) {
-                        write("subCodeLength += new BerLength().decode(is);");
-                        explicitEncoding = "true";
+                    if (hasExplicitTag(sequenceElement)) {
+                        write("codeLength += length.decode(is);");
+                        if (isDirectAny(sequenceElement)) {
+                            explicitEncoding = ", length.val";
+                        }
+                        else {
+                            explicitEncoding = ", true";
+                        }
                     }
                 }
                 else {
@@ -1187,22 +1261,24 @@ public class BerClassWriter {
                 write(getSequenceElementName(sequenceElement) + " = new "
                         + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, " + explicitEncoding
+                write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is" + explicitEncoding
                         + ");");
 
                 if (lastNoneOptionalFieldIndex <= j) {
-                    write("if (subCodeLength == length.val) {");
+                    write("if (subCodeLength == totalLength) {");
                     write("return codeLength;");
                     write("}");
                 }
                 if (j != (sequenceElements.size() - 1)) {
-                    write("subCodeLength += berIdentifier.decode(is);");
+                    if (!isTaglessAny(sequenceElements.get(j + 1))) {
+                        write("subCodeLength += berIdentifier.decode(is);");
+                    }
                 }
 
                 write("}");
 
                 if (j == (sequenceElements.size() - 1)) {
-                    write("throw new IOException(\"Unexpected end of sequence, length tag: \" + length.val + \", actual sequence length: \" + subCodeLength);\n");
+                    write("throw new IOException(\"Unexpected end of sequence, length tag: \" + totalLength + \", actual sequence length: \" + subCodeLength);\n");
                 }
                 else if (!isOptional(sequenceElement)) {
                     write("else {");
@@ -1223,12 +1299,14 @@ public class BerClassWriter {
 
     }
 
+    private boolean isTaglessAny(AsnElementType sequenceElement) {
+        return (!hasTag(sequenceElement) && isDirectAny(sequenceElement));
+    }
+
     private void writeSequenceOrSetToStringFunction(List<AsnElementType> sequenceElements) throws IOException {
         write("public String toString() {");
 
         write("StringBuilder sb = new StringBuilder(\"SEQUENCE{\");");
-
-        // boolean firstSelectedElementInitialized = false;
 
         boolean checkIfFirstSelectedElement = true;
 
@@ -1239,7 +1317,6 @@ public class BerClassWriter {
             if (isOptional(sequenceElement)) {
                 if (j == 0) {
                     write("boolean firstSelectedElement = true;");
-                    // firstSelectedElementInitialized = true;
                 }
                 write("if (" + getSequenceElementName(sequenceElement) + " != null) {");
             }
@@ -1313,19 +1390,22 @@ public class BerClassWriter {
                 write("if (" + getSequenceElementName(sequenceElement) + " != null) {");
             }
 
-            String explicitEncoding = "true";
+            String explicitEncoding = ", true";
             if (hasImplicitTag(sequenceElement)) {
-                explicitEncoding = "false";
+                explicitEncoding = ", false";
+            }
+            if (isDirectAny(sequenceElement)) {
+                explicitEncoding = "";
             }
 
             if (hasExplicitTag(sequenceElement)) {
-                write("sublength = " + getSequenceElementName(sequenceElement) + ".encode(os, " + explicitEncoding
+                write("sublength = " + getSequenceElementName(sequenceElement) + ".encode(os" + explicitEncoding
                         + ");");
                 write("codeLength += sublength;");
                 write("codeLength += BerLength.encodeLength(os, sublength);");
             }
             else {
-                write("codeLength += " + getSequenceElementName(sequenceElement) + ".encode(os, " + explicitEncoding
+                write("codeLength += " + getSequenceElementName(sequenceElement) + ".encode(os" + explicitEncoding
                         + ");");
             }
 
@@ -1417,7 +1497,7 @@ public class BerClassWriter {
         else if (asnType instanceof AsnTaggedType) {
             AsnTaggedType asnTaggedType = (AsnTaggedType) asnType;
 
-            if (isExplicit(asnTaggedType.tagType)) {
+            if (hasExplicitTag(asnTaggedType)) {
                 return false;
             }
 
@@ -1432,7 +1512,7 @@ public class BerClassWriter {
             return isPrimitive(((AsnDefinedType) asnType).typeName, module);
         }
         else if (asnType instanceof AsnChoice) {
-            return false;
+            throw new IllegalStateException("This function is not applicable to CHOICEs");
         }
         else {
             return true;
@@ -1441,7 +1521,7 @@ public class BerClassWriter {
 
     private boolean isPrimitive(String typeName, AsnModule module) throws IOException {
 
-        AsnType asnType = module.asnTypes.typesByName.get(typeName);
+        AsnType asnType = module.typesByName.get(typeName);
         if (asnType != null) {
             return isPrimitive(asnType, module);
         }
@@ -1486,7 +1566,7 @@ public class BerClassWriter {
 
     private AsnUniversalType getUniversalType(String typeName, AsnModule module) throws IOException {
 
-        AsnType asnType = module.asnTypes.typesByName.get(typeName);
+        AsnType asnType = module.typesByName.get(typeName);
         if (asnType != null) {
             return getUniversalType(asnType, module);
         }
@@ -1503,7 +1583,7 @@ public class BerClassWriter {
 
     private AsnType getTypeDefinition(String typeName, AsnModule module) throws IOException {
 
-        AsnType asnType = module.asnTypes.typesByName.get(typeName);
+        AsnType asnType = module.typesByName.get(typeName);
 
         if (asnType != null) {
             return asnType;
@@ -1537,11 +1617,7 @@ public class BerClassWriter {
         if (!hasTag(taggedType)) {
             return false;
         }
-
-        // TODO make this part of the is a directchoice function:
-        if ((!taggedType.typeName.isEmpty() && isADirectChoice(taggedType.typeName))
-                || ((taggedType.typeReference != null) && (taggedType.typeReference instanceof AsnChoice))
-                || (taggedType.typeReference != null && taggedType.typeReference instanceof AsnAny)) {
+        if (isDirectChoice(taggedType) || isDirectAny(taggedType)) {
             return true;
         }
 
@@ -1676,45 +1752,49 @@ public class BerClassWriter {
         }
         else {
 
-            AsnType typeDefinition = (AsnType) asnElementType.typeReference;
+            AsnType typeDefinition = asnElementType.typeReference;
+            if (typeDefinition instanceof AsnTaggedType) {
+                return getClassNameOfSequenceOfTypeReference((AsnType) ((AsnTaggedType) typeDefinition).typeReference);
+            }
+            return getClassNameOfSequenceOfTypeReference(typeDefinition);
+        }
+    }
 
-            if (typeDefinition instanceof AsnConstructedType) {
+    private String getClassNameOfSequenceOfTypeReference(AsnType typeDefinition) {
+        if (typeDefinition instanceof AsnConstructedType) {
 
-                String subClassName;
+            String subClassName;
 
-                if (typeDefinition instanceof AsnSequenceSet) {
+            if (typeDefinition instanceof AsnSequenceSet) {
 
-                    if (((AsnSequenceSet) typeDefinition).isSequence) {
-                        subClassName = "SEQUENCE";
-                    }
-                    else {
-                        subClassName = "SET";
-                    }
-
-                }
-                else if (typeDefinition instanceof AsnSequenceOf) {
-
-                    // TODO does a sub seq of exist at all?
-
-                    if (((AsnSequenceOf) typeDefinition).isSequenceOf) {
-                        subClassName = "SubSeqOf";
-                    }
-                    else {
-                        subClassName = "SubSetOf";
-                    }
-
+                if (((AsnSequenceSet) typeDefinition).isSequence) {
+                    subClassName = "SEQUENCE";
                 }
                 else {
-                    subClassName = "CHOICE";
+                    subClassName = "SET";
                 }
 
-                return subClassName;
+            }
+            else if (typeDefinition instanceof AsnSequenceOf) {
+
+                // TODO does a sub seq of exist at all?
+
+                if (((AsnSequenceOf) typeDefinition).isSequenceOf) {
+                    subClassName = "SubSeqOf";
+                }
+                else {
+                    subClassName = "SubSetOf";
+                }
 
             }
+            else {
+                subClassName = "CHOICE";
+            }
 
-            return getBerType(typeDefinition);
+            return subClassName;
 
         }
+        return getBerType(typeDefinition);
     }
 
     private String getClassNameOfStructureElement(AsnElementType asnElementType) throws IOException {
@@ -1761,9 +1841,9 @@ public class BerClassWriter {
     }
 
     private void writeRetaggingTypeClass(String tagNum, String tagClass, String typeName, String assignedTypeName,
-                                         boolean explicit, AsnType typeDefinition) throws IOException {
+            boolean explicit, AsnType typeDefinition) throws IOException {
 
-        boolean assignedTypeIsDirectChoice = isADirectChoice(assignedTypeName);
+        boolean assignedTypeIsDirectChoice = isDirectChoice(assignedTypeName);
 
         // if the assigned type is a direct choice (not a tagged choice) then the tag is always explicit.
         if (assignedTypeIsDirectChoice && !tagNum.isEmpty()) {
@@ -1790,8 +1870,6 @@ public class BerClassWriter {
             }
         }
 
-        boolean assignedTypeIsChoice = (getUniversalType(typeDefinition) instanceof AsnChoice);
-
         write("public " + typeName + "() {");
         if (!tagNum.isEmpty()) {
             write("id = identifier;");
@@ -1809,8 +1887,7 @@ public class BerClassWriter {
             write("}\n");
         }
 
-        if ((!jaxbMode || (!assignedTypeIsChoice && isPrimitive(typeDefinition)))
-                && (constructorParameters.length != 0)) {
+        if ((!jaxbMode || isPrimitive(typeDefinition)) && (constructorParameters.length != 0)) {
             String constructorParameterString = "";
             String superCallParameterString = "";
             for (int i = 0; i < constructorParameters.length; i += 2) {
@@ -1865,7 +1942,7 @@ public class BerClassWriter {
             write("BerLength length = new BerLength();");
             write("codeLength += length.decode(is);\n");
 
-            if (assignedTypeIsChoice) {
+            if (getUniversalType(typeDefinition) instanceof AsnChoice) {
                 write("codeLength += super.decode(is, null);\n");
             }
             else {
@@ -1916,6 +1993,9 @@ public class BerClassWriter {
             return new String[] { "List<" + getClassNameOfSequenceOfElement((AsnSequenceOf) typeDefinition) + ">",
                     "seqOf" };
         }
+        else if (typeDefinition instanceof AsnAny) {
+            return new String[] { "byte[]", "value" };
+        }
         else {
             throw new IllegalStateException("type of unknown class: " + typeDefinition.name);
         }
@@ -1947,24 +2027,39 @@ public class BerClassWriter {
         return constructorParameters;
     }
 
-    private boolean isADirectChoice(String typeName) throws IOException {
-        return isADirectChoice(typeName, module);
+    private boolean isDirectChoice(String typeName) {
+        return isDirectChoice(typeName, module);
     }
 
-    private boolean isADirectChoice(String typeName, AsnModule module) throws IOException {
+    private boolean isDirectChoice(AsnTaggedType taggedType) {
+        if ((!taggedType.typeName.isEmpty() && isDirectChoice(taggedType.typeName))
+                || ((taggedType.typeReference != null) && (taggedType.typeReference instanceof AsnChoice))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDirectChoice(AsnSequenceOf taggedType) {
+        if ((!taggedType.typeName.isEmpty() && isDirectChoice(taggedType.typeName))
+                || ((taggedType.typeReference != null) && (taggedType.typeReference instanceof AsnChoice))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDirectChoice(String typeName, AsnModule module) {
         if (typeName.startsWith("Ber")) {
             return false;
         }
         else {
 
-            AsnType asnType = module.asnTypes.typesByName.get(typeName);
+            AsnType asnType = module.typesByName.get(typeName);
 
             if (asnType != null) {
                 if (asnType instanceof AsnDefinedType) {
-                    return isADirectChoice(((AsnDefinedType) asnType).typeName, module);
+                    return isDirectChoice(((AsnDefinedType) asnType).typeName, module);
                 }
-                else if (asnType instanceof AsnChoice ||
-                        (asnType instanceof AsnTaggedType && ((AsnTaggedType) asnType).typeReference instanceof AsnChoice)) {
+                else if (asnType instanceof AsnChoice) {
                     return true;
                 }
                 else {
@@ -1975,7 +2070,62 @@ public class BerClassWriter {
             for (SymbolsFromModule symbolsFromModule : module.importSymbolFromModuleList) {
                 for (String importedTypeName : symbolsFromModule.symbolList) {
                     if (typeName.equals(importedTypeName)) {
-                        return isADirectChoice(typeName, modulesByName.get(symbolsFromModule.modref));
+                        return isDirectChoice(typeName, modulesByName.get(symbolsFromModule.modref));
+                    }
+                }
+            }
+            throw new IllegalStateException("Type definition \"" + typeName + "\" was not found in module \""
+                    + module.moduleIdentifier.name + "\"");
+
+        }
+    }
+
+    private boolean isDirectAny(String typeName) {
+        return isDirectAny(typeName, module);
+    }
+
+    private boolean isDirectAny(AsnTaggedType taggedType) {
+        if ((!taggedType.typeName.isEmpty() && isDirectAny(taggedType.typeName))
+                || ((taggedType.typeReference != null) && ((taggedType.typeReference instanceof AsnAny)
+                        || (taggedType.typeReference instanceof AsnAnyNoDecode)))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDirectAny(AsnSequenceOf taggedType) {
+        if ((!taggedType.typeName.isEmpty() && isDirectAny(taggedType.typeName))
+                || ((taggedType.typeReference != null) && ((taggedType.typeReference instanceof AsnAny)
+                        || (taggedType.typeReference instanceof AsnAnyNoDecode)))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDirectAny(String typeName, AsnModule module) {
+        if (typeName.startsWith("Ber")) {
+            return false;
+        }
+        else {
+
+            AsnType asnType = module.typesByName.get(typeName);
+
+            if (asnType != null) {
+                if (asnType instanceof AsnDefinedType) {
+                    return isDirectAny(((AsnDefinedType) asnType).typeName, module);
+                }
+                else if ((asnType instanceof AsnAny) || (asnType instanceof AsnAnyNoDecode)) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+
+            for (SymbolsFromModule symbolsFromModule : module.importSymbolFromModuleList) {
+                for (String importedTypeName : symbolsFromModule.symbolList) {
+                    if (typeName.equals(importedTypeName)) {
+                        return isDirectAny(typeName, modulesByName.get(symbolsFromModule.modref));
                     }
                 }
             }

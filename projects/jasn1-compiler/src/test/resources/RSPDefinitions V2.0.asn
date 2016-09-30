@@ -216,7 +216,7 @@ DownloadErrorCode ::= INTEGER {invalidCertificate(1), invalidSignature(2), unsup
 -- Definition of data objects for command AuthenticateServer--------------------
 AuthenticateServerRequest ::= [56] SEQUENCE { -- Tag 'BF38'
 	serverSigned1 ServerSigned1, 				-- Signed information
-	serverSignature1 [APPLICATION 55] OCTET STRING, 	-- tag ‘5F37’
+	serverSignature1 [APPLICATION 55] OCTET STRING, 	-- tag ï¿½5F37ï¿½
 	euiccCiPKIdToBeUsed SubjectKeyIdentifier, 		-- CI Public Key Identifier to be used
 	serverCertificate Certificate, -- RSP Server Certificate CERT.XXauth.ECDSA
 	ctxParams1 CtxParams1
@@ -463,13 +463,16 @@ NotificationSentResponse ::= [48] SEQUENCE { -- Tag 'BF30'
 }
 
 -- Definition of Enable Profile --------------------------
-EnableProfileRequest ::= [49] SEQUENCE { -- Tag 'BF31'
-	CHOICE {
-		isdpAid [APPLICATION 15] OctetTo16, -- AID, tag '4F'
-		iccid Iccid -- ICCID, tag '5A'
-	},
-	refreshFlag BOOLEAN -- indicating whether REFRESH is required
+EnableProfileRequest ::= SEQUENCE { -- Tag 'BF31'
+	refreshFlag BOOLEAN, -- indicating whether REFRESH is required
+	test MyC
 }
+
+MyC ::= 		CHOICE {
+		isdpAid [APPLICATION 15] INTEGER, -- AID, tag '4F'
+		iccid INTEGER -- ICCID, tag '5A'
+	}
+
 
 EnableProfileResponse ::= [49] SEQUENCE { -- Tag 'BF31'
 	enableResult INTEGER {ok(0), iccidOrAidNotFound (1), profileNotInDisabledState(2), disallowedByPolicy(3), undefinedError(127)}
@@ -477,7 +480,7 @@ EnableProfileResponse ::= [49] SEQUENCE { -- Tag 'BF31'
 
 -- Definition of Disable Profile --------------------------
 DisableProfileRequest ::= [50] SEQUENCE { -- Tag 'BF32'
-	CHOICE {
+	ets CHOICE {
 		isdpAid [APPLICATION 15] OctetTo16, -- AID, tag '4F'
 		iccid Iccid -- ICCID, tag '5A'
 	},

@@ -21,10 +21,10 @@
 package org.openmuc.jasn1.compiler.model;
 
 public class AsnTaggedType extends AsnType {
-    public boolean isDefinedType; // Element type is defined Type
+    public boolean isDefinedType;
     public AsnTag tag = null;
     public String tagType = "";
-    public String typeName = ""; // Name of defined type
-    public Object typeReference = null; // Type Reference
+    public String typeName = "";
+    public Object typeReference = null;
 
 }

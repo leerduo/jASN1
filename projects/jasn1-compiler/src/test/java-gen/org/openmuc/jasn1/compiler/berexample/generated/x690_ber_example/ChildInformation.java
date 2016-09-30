@@ -87,7 +87,8 @@ public class ChildInformation {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		while (subCodeLength < length.val) {
+		int totalLength = length.val;
+		while (subCodeLength < totalLength) {
 			subCodeLength += berIdentifier.decode(is);
 			if (berIdentifier.equals(Name.identifier)) {
 				name = new Name();
@@ -99,8 +100,8 @@ public class ChildInformation {
 				subCodeLength += dateOfBirth.decode(is, true);
 			}
 		}
-		if (subCodeLength != length.val) {
-			throw new IOException("Length of set does not match length tag, length tag: " + length.val + ", actual set length: " + subCodeLength);
+		if (subCodeLength != totalLength) {
+			throw new IOException("Length of set does not match length tag, length tag: " + totalLength + ", actual set length: " + subCodeLength);
 
 		}
 		codeLength += subCodeLength;

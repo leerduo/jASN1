@@ -95,6 +95,9 @@ public class Compiler {
         for (String inputFile : inputFiles) {
             System.out.println("Parsing file: " + inputFile);
             AsnModel model = getJavaModelFromAsn1File(inputFile);
+            for (String modName : model.modulesByName.keySet()) {
+                System.out.println("modname: " + modName);
+            }
             modulesByName.putAll(model.modulesByName);
         }
 

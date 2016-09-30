@@ -66,9 +66,10 @@ public class PEDummy {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
-		if (length.val == -1) {
+		if (totalLength == -1) {
 			subCodeLength += berIdentifier.decode(is);
 
 			int nextByte = is.read();
@@ -83,7 +84,7 @@ public class PEDummy {
 			return codeLength;
 		}
 
-		if (length.val == 0) {
+		if (totalLength == 0) {
 			return codeLength;
 		}
 		subCodeLength += berIdentifier.decode(is);

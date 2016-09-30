@@ -87,7 +87,8 @@ public class Namez {
 		BerLength length = new BerLength();
 		codeLength += length.decode(is);
 
-		codeLength += length.val;
+		int totalLength = length.val;
+		codeLength += totalLength;
 
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerVisibleString.identifier)) {
@@ -111,11 +112,11 @@ public class Namez {
 		if (berIdentifier.equals(BerVisibleString.identifier)) {
 			familyName = new BerVisibleString();
 			subCodeLength += familyName.decode(is, false);
-			if (subCodeLength == length.val) {
+			if (subCodeLength == totalLength) {
 				return codeLength;
 			}
 		}
-		throw new IOException("Unexpected end of sequence, length tag: " + length.val + ", actual sequence length: " + subCodeLength);
+		throw new IOException("Unexpected end of sequence, length tag: " + totalLength + ", actual sequence length: " + subCodeLength);
 
 		
 	}
