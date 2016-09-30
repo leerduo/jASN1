@@ -37,7 +37,7 @@ public class RspDefinitionsTest {
     @Test
     public void compiling() throws Exception {
         String[] args = new String[]{"-o", "src/test/java-gen/org/openmuc/jasn1/compiler/rspdefinitions/generated",
-                "-p", "org.openmuc.jasn1.compiler.rspdefinitions.generated", "-il",
+                "-p", "org.openmuc.jasn1.compiler.rspdefinitions.generated",
                 "src/test/resources/RSPDefinitions V2.0.asn", "src/test/resources/PKIXImplicit88.asn", "src/test/resources/PKIXExplicit88.asn"};
         Compiler.main(args);
     }

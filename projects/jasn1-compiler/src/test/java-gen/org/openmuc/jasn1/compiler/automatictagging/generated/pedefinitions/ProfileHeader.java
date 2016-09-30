@@ -287,9 +287,6 @@ public class ProfileHeader {
 				subCodeLength += majorVersion.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -305,9 +302,6 @@ public class ProfileHeader {
 				minorVersion = new UInt8();
 				subCodeLength += minorVersion.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
@@ -341,9 +335,6 @@ public class ProfileHeader {
 				subCodeLength += iccid.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -376,9 +367,6 @@ public class ProfileHeader {
 				subCodeLength += eUICCMandatoryServices.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -394,9 +382,6 @@ public class ProfileHeader {
 				eUICCMandatoryGFSTEList = new EUICCMandatoryGFSTEList();
 				subCodeLength += eUICCMandatoryGFSTEList.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();

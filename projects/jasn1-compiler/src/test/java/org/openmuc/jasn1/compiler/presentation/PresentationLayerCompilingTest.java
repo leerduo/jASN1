@@ -28,9 +28,9 @@ public class PresentationLayerCompilingTest {
     @Test
     public void compiling() throws Exception {
 
-        String[] args = new String[] { "-o", "src/test/java-gen/org/openmuc/jasn1/compiler/presentation/generated",
-                "-p", "org.openmuc.jasn1.compiler.presentation.generated",
-                "src/test/resources/isoPresentationLayer.asn" };
+        String[] args = new String[] { "-il", "-o",
+                "src/test/java-gen/org/openmuc/jasn1/compiler/presentation/generated", "-p",
+                "org.openmuc.jasn1.compiler.presentation.generated", "src/test/resources/isoPresentationLayer.asn" };
         Compiler.main(args);
 
     }

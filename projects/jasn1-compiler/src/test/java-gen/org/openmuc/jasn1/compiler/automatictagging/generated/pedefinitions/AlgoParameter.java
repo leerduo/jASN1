@@ -154,9 +154,6 @@ public class AlgoParameter {
 				subCodeLength += algorithmID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -172,9 +169,6 @@ public class AlgoParameter {
 				algorithmOptions = new BerOctetString();
 				subCodeLength += algorithmOptions.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
@@ -192,9 +186,6 @@ public class AlgoParameter {
 				subCodeLength += key.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -210,9 +201,6 @@ public class AlgoParameter {
 				opc = new BerOctetString();
 				subCodeLength += opc.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();

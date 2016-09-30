@@ -28,8 +28,9 @@ public class CompileTests {
     @Test
     public void compiling() throws Exception {
 
-        String[] args = new String[] { "-o", "src/test/java-gen/org/openmuc/jasn1/compiler/someexamples/generated",
-                "-p", "org.openmuc.jasn1.compiler.someexamples.generated", "src/test/resources/PKIXExplicit88.asn",
+        String[] args = new String[] { "-il", "-o",
+                "src/test/java-gen/org/openmuc/jasn1/compiler/someexamples/generated", "-p",
+                "org.openmuc.jasn1.compiler.someexamples.generated", "src/test/resources/PKIXExplicit88.asn",
                 "src/test/resources/PKIXImplicit88.asn", "src/test/resources/RSPDefinitions V2.0.asn" };
         Compiler.main(args);
 

@@ -122,9 +122,6 @@ public class KeyObject {
 						subCodeLength += keyType.decode(is, false);
 						subCodeLength += berIdentifier.decode(is);
 					}
-					else {
-						throw new IOException("Identifier does not match required sequence element identifer.");
-					}
 					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 						int nextByte = is.read();
 						if (nextByte != 0) {
@@ -140,9 +137,6 @@ public class KeyObject {
 						keyData = new BerOctetString();
 						subCodeLength += keyData.decode(is, false);
 						subCodeLength += berIdentifier.decode(is);
-					}
-					else {
-						throw new IOException("Identifier does not match required sequence element identifer.");
 					}
 					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 						int nextByte = is.read();
@@ -476,9 +470,6 @@ public class KeyObject {
 				subCodeLength += keyUsageQualifier.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -511,9 +502,6 @@ public class KeyObject {
 				subCodeLength += keyIdentifier.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -529,9 +517,6 @@ public class KeyObject {
 				keyVersionNumber = new BerOctetString();
 				subCodeLength += keyVersionNumber.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
@@ -564,9 +549,6 @@ public class KeyObject {
 				keyCompontents = new KeyCompontents();
 				subCodeLength += keyCompontents.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			int nextByte = is.read();
 			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0

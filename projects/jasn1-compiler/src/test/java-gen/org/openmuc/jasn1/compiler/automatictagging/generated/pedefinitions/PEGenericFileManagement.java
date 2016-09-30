@@ -233,9 +233,6 @@ public class PEGenericFileManagement {
 				subCodeLength += gfmHeader.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -251,9 +248,6 @@ public class PEGenericFileManagement {
 				fileManagementCMD = new FileManagementCMD();
 				subCodeLength += fileManagementCMD.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			int nextByte = is.read();
 			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0

@@ -893,9 +893,6 @@ public class PEOPTUSIM {
 				subCodeLength += optusimHeader.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();
 				if (nextByte != 0) {
@@ -911,9 +908,6 @@ public class PEOPTUSIM {
 				templateID = new BerObjectIdentifier();
 				subCodeLength += templateID.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
-			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
 			}
 			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
 				int nextByte = is.read();

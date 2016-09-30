@@ -89,6 +89,58 @@ public class UserNotice {
 		int totalLength = length.val;
 		codeLength += totalLength;
 
+		if (totalLength == -1) {
+			subCodeLength += berIdentifier.decode(is);
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(NoticeReference.identifier)) {
+				noticeRef = new NoticeReference();
+				subCodeLength += noticeRef.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			explicitText = new DisplayText();
+			int choiceDecodeLength = explicitText.decode(is, berIdentifier);
+			if (choiceDecodeLength != 0) {
+				subCodeLength += choiceDecodeLength;
+				subCodeLength += berIdentifier.decode(is);
+			}
+			else {
+				explicitText = null;
+			}
+
+			int nextByte = is.read();
+			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
+			|| nextByte != 0) {
+				if (nextByte == -1) {
+					throw new EOFException("Unexpected end of input stream.");
+				}
+				throw new IOException("Decoded sequence has wrong end of contents octets");
+			}
+			codeLength += subCodeLength + 1;
+			return codeLength;
+		}
+
 		if (totalLength == 0) {
 			return codeLength;
 		}

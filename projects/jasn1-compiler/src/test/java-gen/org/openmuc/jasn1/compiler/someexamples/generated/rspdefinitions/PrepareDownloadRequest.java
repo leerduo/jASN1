@@ -101,6 +101,85 @@ public class PrepareDownloadRequest {
 		int totalLength = length.val;
 		codeLength += totalLength;
 
+		if (totalLength == -1) {
+			subCodeLength += berIdentifier.decode(is);
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(SmdpSigned2.identifier)) {
+				smdpSigned2 = new SmdpSigned2();
+				subCodeLength += smdpSigned2.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.APPLICATION_CLASS, BerIdentifier.PRIMITIVE, 55)) {
+				smdpSignature2 = new BerOctetString();
+				subCodeLength += smdpSignature2.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(Octet32.identifier)) {
+				hashCc = new Octet32();
+				subCodeLength += hashCc.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(Certificate.identifier)) {
+				smdpCertificate = new Certificate();
+				subCodeLength += smdpCertificate.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			int nextByte = is.read();
+			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
+			|| nextByte != 0) {
+				if (nextByte == -1) {
+					throw new EOFException("Unexpected end of input stream.");
+				}
+				throw new IOException("Decoded sequence has wrong end of contents octets");
+			}
+			codeLength += subCodeLength + 1;
+			return codeLength;
+		}
+
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(SmdpSigned2.identifier)) {
 			smdpSigned2 = new SmdpSigned2();

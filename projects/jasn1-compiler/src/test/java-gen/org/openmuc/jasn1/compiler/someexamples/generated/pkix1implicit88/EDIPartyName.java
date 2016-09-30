@@ -99,6 +99,69 @@ public class EDIPartyName {
 		int totalLength = length.val;
 		codeLength += totalLength;
 
+		if (totalLength == -1) {
+			subCodeLength += berIdentifier.decode(is);
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
+				subCodeLength += length.decode(is);
+				nameAssigner = new DirectoryString();
+				int choiceDecodeLength = nameAssigner.decode(is, null);
+				if (choiceDecodeLength != 0) {
+					subCodeLength += choiceDecodeLength;
+					subCodeLength += berIdentifier.decode(is);
+				}
+				else {
+					nameAssigner = null;
+				}
+
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
+				subCodeLength += length.decode(is);
+				partyName = new DirectoryString();
+				int choiceDecodeLength = partyName.decode(is, null);
+				if (choiceDecodeLength != 0) {
+					subCodeLength += choiceDecodeLength;
+					subCodeLength += berIdentifier.decode(is);
+				}
+				else {
+					partyName = null;
+				}
+
+			}
+			int nextByte = is.read();
+			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
+			|| nextByte != 0) {
+				if (nextByte == -1) {
+					throw new EOFException("Unexpected end of input stream.");
+				}
+				throw new IOException("Decoded sequence has wrong end of contents octets");
+			}
+			codeLength += subCodeLength + 1;
+			return codeLength;
+		}
+
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
 			subCodeLength += length.decode(is);

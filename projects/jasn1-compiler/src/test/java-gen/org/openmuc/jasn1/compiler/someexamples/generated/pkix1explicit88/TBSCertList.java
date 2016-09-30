@@ -109,6 +109,77 @@ public class TBSCertList {
 				int totalLength = length.val;
 				codeLength += totalLength;
 
+				if (totalLength == -1) {
+					subCodeLength += berIdentifier.decode(is);
+
+					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+						int nextByte = is.read();
+						if (nextByte != 0) {
+							if (nextByte == -1) {
+								throw new EOFException("Unexpected end of input stream.");
+							}
+							throw new IOException("Decoded sequence has wrong end of contents octets");
+						}
+						codeLength += subCodeLength + 1;
+						return codeLength;
+					}
+					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
+						userCertificate = new CertificateSerialNumber();
+						subCodeLength += userCertificate.decode(is, false);
+						subCodeLength += berIdentifier.decode(is);
+					}
+					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+						int nextByte = is.read();
+						if (nextByte != 0) {
+							if (nextByte == -1) {
+								throw new EOFException("Unexpected end of input stream.");
+							}
+							throw new IOException("Decoded sequence has wrong end of contents octets");
+						}
+						codeLength += subCodeLength + 1;
+						return codeLength;
+					}
+					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
+						subCodeLength += length.decode(is);
+						revocationDate = new Time();
+						int choiceDecodeLength = revocationDate.decode(is, null);
+						if (choiceDecodeLength != 0) {
+							subCodeLength += choiceDecodeLength;
+							subCodeLength += berIdentifier.decode(is);
+						}
+						else {
+							revocationDate = null;
+						}
+
+					}
+					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+						int nextByte = is.read();
+						if (nextByte != 0) {
+							if (nextByte == -1) {
+								throw new EOFException("Unexpected end of input stream.");
+							}
+							throw new IOException("Decoded sequence has wrong end of contents octets");
+						}
+						codeLength += subCodeLength + 1;
+						return codeLength;
+					}
+					if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 2)) {
+						crlEntryExtensions = new Extensions();
+						subCodeLength += crlEntryExtensions.decode(is, false);
+						subCodeLength += berIdentifier.decode(is);
+					}
+					int nextByte = is.read();
+					if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
+					|| nextByte != 0) {
+						if (nextByte == -1) {
+							throw new EOFException("Unexpected end of input stream.");
+						}
+						throw new IOException("Decoded sequence has wrong end of contents octets");
+					}
+					codeLength += subCodeLength + 1;
+					return codeLength;
+				}
+
 				subCodeLength += berIdentifier.decode(is);
 				if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 0)) {
 					userCertificate = new CertificateSerialNumber();
@@ -227,6 +298,27 @@ public class TBSCertList {
 			codeLength += length.decode(is);
 			int totalLength = length.val;
 
+			if (length.val == -1) {
+				while (true) {
+					subCodeLength += berIdentifier.decode(is);
+
+					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+						int nextByte = is.read();
+						if (nextByte != 0) {
+							if (nextByte == -1) {
+								throw new EOFException("Unexpected end of input stream.");
+							}
+							throw new IOException("Decoded sequence has wrong end of contents octets");
+						}
+						codeLength += subCodeLength + 1;
+						return codeLength;
+					}
+
+					SEQUENCE element = new SEQUENCE();
+					subCodeLength += element.decode(is, false);
+					seqOf.add(element);
+				}
+			}
 			while (subCodeLength < totalLength) {
 				SEQUENCE element = new SEQUENCE();
 				subCodeLength += element.decode(is, true);
@@ -370,6 +462,148 @@ public class TBSCertList {
 
 		int totalLength = length.val;
 		codeLength += totalLength;
+
+		if (totalLength == -1) {
+			subCodeLength += berIdentifier.decode(is);
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(Version.identifier)) {
+				version = new Version();
+				subCodeLength += version.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(AlgorithmIdentifier.identifier)) {
+				signature = new AlgorithmIdentifier();
+				subCodeLength += signature.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			issuer = new Name();
+			int choiceDecodeLength = issuer.decode(is, berIdentifier);
+			if (choiceDecodeLength != 0) {
+				subCodeLength += choiceDecodeLength;
+				subCodeLength += berIdentifier.decode(is);
+			}
+			else {
+				issuer = null;
+			}
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			thisUpdate = new Time();
+			choiceDecodeLength = thisUpdate.decode(is, berIdentifier);
+			if (choiceDecodeLength != 0) {
+				subCodeLength += choiceDecodeLength;
+				subCodeLength += berIdentifier.decode(is);
+			}
+			else {
+				thisUpdate = null;
+			}
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			nextUpdate = new Time();
+			choiceDecodeLength = nextUpdate.decode(is, berIdentifier);
+			if (choiceDecodeLength != 0) {
+				subCodeLength += choiceDecodeLength;
+				subCodeLength += berIdentifier.decode(is);
+			}
+			else {
+				nextUpdate = null;
+			}
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(RevokedCertificates.identifier)) {
+				revokedCertificates = new RevokedCertificates();
+				subCodeLength += revokedCertificates.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
+				crlExtensions = new Extensions();
+				subCodeLength += crlExtensions.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			int nextByte = is.read();
+			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
+			|| nextByte != 0) {
+				if (nextByte == -1) {
+					throw new EOFException("Unexpected end of input stream.");
+				}
+				throw new IOException("Decoded sequence has wrong end of contents octets");
+			}
+			codeLength += subCodeLength + 1;
+			return codeLength;
+		}
 
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(Version.identifier)) {

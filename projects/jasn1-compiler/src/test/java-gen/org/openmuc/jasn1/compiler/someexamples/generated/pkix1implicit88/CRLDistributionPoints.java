@@ -79,6 +79,27 @@ public class CRLDistributionPoints {
 		codeLength += length.decode(is);
 		int totalLength = length.val;
 
+		if (length.val == -1) {
+			while (true) {
+				subCodeLength += berIdentifier.decode(is);
+
+				if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+					int nextByte = is.read();
+					if (nextByte != 0) {
+						if (nextByte == -1) {
+							throw new EOFException("Unexpected end of input stream.");
+						}
+						throw new IOException("Decoded sequence has wrong end of contents octets");
+					}
+					codeLength += subCodeLength + 1;
+					return codeLength;
+				}
+
+				DistributionPoint element = new DistributionPoint();
+				subCodeLength += element.decode(is, false);
+				seqOf.add(element);
+			}
+		}
 		while (subCodeLength < totalLength) {
 			DistributionPoint element = new DistributionPoint();
 			subCodeLength += element.decode(is, true);

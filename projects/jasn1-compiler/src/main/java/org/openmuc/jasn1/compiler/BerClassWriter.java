@@ -1026,7 +1026,9 @@ public class BerClassWriter {
 
                     write(initChoiceDecodeLength + "choiceDecodeLength = " + getSequenceElementName(sequenceElement)
                             + ".decode(is, " + explicitEncoding + ");");
-                    initChoiceDecodeLength = "";
+                    if (!hasExplicitTag(sequenceElement)) {
+                        initChoiceDecodeLength = "";
+                    }
                     write("if (choiceDecodeLength != 0) {");
                     write("subCodeLength += choiceDecodeLength;");
 
@@ -1071,28 +1073,40 @@ public class BerClassWriter {
                         }
                     }
                     else {
-                        write("if (berIdentifier.equals(" + getClassNameOfStructureElement(sequenceElement)
-                                + ".identifier)) {");
+                        if (!isDirectAny(sequenceElement)) {
+                            write("if (berIdentifier.equals(" + getClassNameOfStructureElement(sequenceElement)
+                                    + ".identifier)) {");
+                        }
                     }
 
                     write(getSequenceElementName(sequenceElement) + " = new "
                             + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                    write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is"
-                            + explicitEncoding + ");");
+                    if (isDirectAny(sequenceElement)) {
+                        write("subCodeLength += " + getSequenceElementName(sequenceElement)
+                                + ".decode(is, length.val);");
+
+                    }
+                    else {
+                        write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is"
+                                + explicitEncoding + ");");
+                    }
 
                     write("subCodeLength += berIdentifier.decode(is);");
 
-                    write("}");
+                    if (hasTag(sequenceElement) || !isDirectAny(sequenceElement)) {
+                        write("}");
+                    }
 
                 }
 
-                if (!isOptional(sequenceElement) && ((!(getUniversalType(sequenceElement) instanceof AsnChoice))
-                        || hasExplicitTag(sequenceElement))) {
-                    write("else {");
-                    write("throw new IOException(\"Identifier does not match required sequence element identifer.\");");
-                    write("}");
-                }
+                // TODO has be reinserted:
+                // if (!isOptional(sequenceElement) && ((!(getUniversalType(sequenceElement) instanceof AsnChoice))
+                // || hasExplicitTag(sequenceElement))) {
+                // write("else {");
+                // write("throw new IOException(\"Identifier does not match required sequence element identifer.\");");
+                // write("}");
+                // }
 
             }
 

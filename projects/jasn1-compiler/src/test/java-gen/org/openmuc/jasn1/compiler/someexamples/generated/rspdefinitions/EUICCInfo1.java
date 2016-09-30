@@ -81,6 +81,27 @@ public class EUICCInfo1 {
 			codeLength += length.decode(is);
 			int totalLength = length.val;
 
+			if (length.val == -1) {
+				while (true) {
+					subCodeLength += berIdentifier.decode(is);
+
+					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+						int nextByte = is.read();
+						if (nextByte != 0) {
+							if (nextByte == -1) {
+								throw new EOFException("Unexpected end of input stream.");
+							}
+							throw new IOException("Decoded sequence has wrong end of contents octets");
+						}
+						codeLength += subCodeLength + 1;
+						return codeLength;
+					}
+
+					SubjectKeyIdentifier element = new SubjectKeyIdentifier();
+					subCodeLength += element.decode(is, false);
+					seqOf.add(element);
+				}
+			}
 			while (subCodeLength < totalLength) {
 				SubjectKeyIdentifier element = new SubjectKeyIdentifier();
 				subCodeLength += element.decode(is, true);
@@ -185,6 +206,27 @@ public class EUICCInfo1 {
 			codeLength += length.decode(is);
 			int totalLength = length.val;
 
+			if (length.val == -1) {
+				while (true) {
+					subCodeLength += berIdentifier.decode(is);
+
+					if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+						int nextByte = is.read();
+						if (nextByte != 0) {
+							if (nextByte == -1) {
+								throw new EOFException("Unexpected end of input stream.");
+							}
+							throw new IOException("Decoded sequence has wrong end of contents octets");
+						}
+						codeLength += subCodeLength + 1;
+						return codeLength;
+					}
+
+					SubjectKeyIdentifier element = new SubjectKeyIdentifier();
+					subCodeLength += element.decode(is, false);
+					seqOf.add(element);
+				}
+			}
 			while (subCodeLength < totalLength) {
 				SubjectKeyIdentifier element = new SubjectKeyIdentifier();
 				subCodeLength += element.decode(is, true);
@@ -306,6 +348,69 @@ public class EUICCInfo1 {
 
 		int totalLength = length.val;
 		codeLength += totalLength;
+
+		if (totalLength == -1) {
+			subCodeLength += berIdentifier.decode(is);
+
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {
+				eUICCVerSupport = new VersionType();
+				subCodeLength += eUICCVerSupport.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 8)) {
+				euiccCiPKIdListForVerification = new EuiccCiPKIdListForVerification();
+				subCodeLength += euiccCiPKIdListForVerification.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			if (berIdentifier.tagNumber == 0 && berIdentifier.identifierClass == 0 && berIdentifier.primitive == 0) {
+				int nextByte = is.read();
+				if (nextByte != 0) {
+					if (nextByte == -1) {
+						throw new EOFException("Unexpected end of input stream.");
+					}
+					throw new IOException("Decoded sequence has wrong end of contents octets");
+				}
+				codeLength += subCodeLength + 1;
+				return codeLength;
+			}
+			if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 9)) {
+				euiccCiPKIdListForSigning = new EuiccCiPKIdListForSigning();
+				subCodeLength += euiccCiPKIdListForSigning.decode(is, false);
+				subCodeLength += berIdentifier.decode(is);
+			}
+			int nextByte = is.read();
+			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
+			|| nextByte != 0) {
+				if (nextByte == -1) {
+					throw new EOFException("Unexpected end of input stream.");
+				}
+				throw new IOException("Decoded sequence has wrong end of contents octets");
+			}
+			codeLength += subCodeLength + 1;
+			return codeLength;
+		}
 
 		subCodeLength += berIdentifier.decode(is);
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 2)) {

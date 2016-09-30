@@ -126,9 +126,6 @@ public class PEHeader {
 				subCodeLength += identification.decode(is, false);
 				subCodeLength += berIdentifier.decode(is);
 			}
-			else {
-				throw new IOException("Identifier does not match required sequence element identifer.");
-			}
 			int nextByte = is.read();
 			if (berIdentifier.tagNumber != 0 || berIdentifier.identifierClass != 0 || berIdentifier.primitive != 0
 			|| nextByte != 0) {

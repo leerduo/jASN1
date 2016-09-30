@@ -28,8 +28,8 @@ public class X690BerExampleCompilingTest {
     @Test
     public void compiling() throws Exception {
 
-        String[] args = new String[] { "-o", "src/test/java-gen/org/openmuc/jasn1/compiler/berexample/generated", "-p",
-                "org.openmuc.jasn1.compiler.berexample.generated", "src/test/resources/x690BerExample.asn" };
+        String[] args = new String[] { "-il", "-o", "src/test/java-gen/org/openmuc/jasn1/compiler/berexample/generated",
+                "-p", "org.openmuc.jasn1.compiler.berexample.generated", "src/test/resources/x690BerExample.asn" };
         Compiler.main(args);
 
     }
