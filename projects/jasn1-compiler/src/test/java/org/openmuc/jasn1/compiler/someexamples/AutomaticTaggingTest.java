@@ -59,7 +59,7 @@ public class AutomaticTaggingTest {
     public void compiling() throws Exception {
 
         String[] args = new String[] { "-o", "src/test/java-gen/org/openmuc/jasn1/compiler/automatictagging/generated",
-                "-p", "org.openmuc.jasn1.compiler.automatictagging.generated", "-il",
+                "-p", "org.openmuc.jasn1.compiler.automatictagging.generated",
                 "src/test/resources/PEDefinitionsV2.0.asn" };
         Compiler.main(args);
     }
