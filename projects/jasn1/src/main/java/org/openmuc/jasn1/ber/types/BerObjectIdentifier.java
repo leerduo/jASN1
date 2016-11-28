@@ -136,7 +136,7 @@ public class BerObjectIdentifier {
 
         codeLength += length.val;
 
-        List<Integer> objectIdentifierComponentsList = new ArrayList<Integer>();
+        List<Integer> objectIdentifierComponentsList = new ArrayList<>();
 
         int subIDEndIndex = 0;
         while ((byteCode[subIDEndIndex] & 0x80) == 0x80) {

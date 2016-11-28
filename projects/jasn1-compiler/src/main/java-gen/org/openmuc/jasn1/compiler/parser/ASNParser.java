@@ -2399,7 +2399,7 @@ inputState.guessing--;
 	public final Object  choice_type() throws RecognitionException, TokenStreamException {
 		Object obj;
 		
-		AsnChoice ch = new AsnChoice(); AsnElementTypeList eltplst ; 
+		AsnChoice ch = new AsnChoice(); List<AsnComponentType> eltplst; 
 		obj = null;
 		
 		try {      // for error handling
@@ -2409,7 +2409,7 @@ inputState.guessing--;
 			{
 			eltplst=elementType_list();
 			if ( inputState.guessing==0 ) {
-				ch.elementTypeList = eltplst ;
+				ch.componentTypes = eltplst ;
 			}
 			}
 			match(R_BRACE);
@@ -2687,7 +2687,7 @@ inputState.guessing--;
 		Object obj;
 		
 		AsnSequenceSet seq = new AsnSequenceSet();
-		AsnElementTypeList eltplist ; AsnConstraint cnstrnt ; obj = null;
+		List<AsnComponentType> eltplist ; AsnConstraint cnstrnt ; obj = null;
 		
 		try {      // for error handling
 			{
@@ -2744,7 +2744,7 @@ inputState.guessing--;
 			{
 				eltplist=elementType_list();
 				if ( inputState.guessing==0 ) {
-					seq.elementTypeList = eltplist;
+					seq.componentTypes = eltplist;
 				}
 				break;
 			}
@@ -2835,7 +2835,7 @@ inputState.guessing--;
 		Object obj;
 		
 		AsnSequenceSet set = new AsnSequenceSet();
-		AsnElementTypeList eltplist ;obj = null;
+		List<AsnComponentType> eltplist ;obj = null;
 		
 		try {      // for error handling
 			{
@@ -2889,7 +2889,7 @@ inputState.guessing--;
 			{
 				eltplist=elementType_list();
 				if ( inputState.guessing==0 ) {
-					set.elementTypeList = eltplist ;
+					set.componentTypes = eltplist ;
 				}
 				break;
 			}
@@ -2977,7 +2977,7 @@ inputState.guessing--;
 	public final Object  tagged_type() throws RecognitionException, TokenStreamException {
 		Object obj;
 		
-		AsnTaggedType tgtyp = new AsnTaggedType();
+		AsnNamedType tgtyp = new AsnNamedType();
 		AsnTag tg; Object obj1 = null; String s; obj = null;
 		
 		try {      // for error handling
@@ -3515,10 +3515,10 @@ inputState.guessing--;
 		return s;
 	}
 	
-	public final AsnElementTypeList  elementType_list() throws RecognitionException, TokenStreamException {
-		AsnElementTypeList elelist;
+	public final List<AsnComponentType>  elementType_list() throws RecognitionException, TokenStreamException {
+		List<AsnComponentType> elelist;
 		
-		elelist = new AsnElementTypeList(); AsnElementType eletyp; int i=1;
+		elelist = new ArrayList<>(); AsnComponentType eletyp; int i=1;
 		
 		try {      // for error handling
 			{
@@ -3573,7 +3573,7 @@ inputState.guessing--;
 			{
 				eletyp=elementType();
 				if ( inputState.guessing==0 ) {
-					if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.elements.add(eletyp);i++;
+					if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.add(eletyp);i++;
 				}
 				{
 				_loop335:
@@ -3633,7 +3633,7 @@ inputState.guessing--;
 							{
 							eletyp=elementType();
 							if ( inputState.guessing==0 ) {
-								if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.elements.add(eletyp);i++;
+								if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.add(eletyp);i++;
 							}
 							}
 							break;
@@ -4943,11 +4943,11 @@ inputState.guessing--;
 		}
 	}
 	
-	public final AsnElementType  elementType() throws RecognitionException, TokenStreamException {
-		AsnElementType eletyp;
+	public final AsnComponentType  elementType() throws RecognitionException, TokenStreamException {
+		AsnComponentType eletyp;
 		
 		Token  lid = null;
-		eletyp = new AsnElementType();AsnValue val; 
+		eletyp = new AsnComponentType();AsnValue val; 
 		Object obj; AsnTag tg; String s;
 		
 		try {      // for error handling

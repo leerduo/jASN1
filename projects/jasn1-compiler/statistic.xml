@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Statistic">
+    <option name="excludedDirectories">
+      <list>
+        <option value="$PROJECT_DIR$/ATCommandTester" />
+        <option value="$PROJECT_DIR$/bcpgp" />
+        <option value="$PROJECT_DIR$/cellidremover" />
+        <option value="$PROJECT_DIR$/gsm0348" />
+        <option value="$PROJECT_DIR$/java-bitpay-client-master" />
+        <option value="$PROJECT_DIR$/jcardsim" />
+        <option value="$PROJECT_DIR$/memcached-bug" />
+      </list>
+    </option>
+  </component>
+</project>

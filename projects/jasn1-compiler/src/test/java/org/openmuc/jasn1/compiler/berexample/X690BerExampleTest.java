@@ -83,7 +83,7 @@ public class X690BerExampleTest {
                 new Name(new BerVisibleString("Susan"), new BerVisibleString("B"), new BerVisibleString("Jones")),
                 new Date("19590717".getBytes()));
 
-        List<ChildInformation> childList = new ArrayList<ChildInformation>(2);
+        List<ChildInformation> childList = new ArrayList<>(2);
         childList.add(child1);
         childList.add(child2);
 

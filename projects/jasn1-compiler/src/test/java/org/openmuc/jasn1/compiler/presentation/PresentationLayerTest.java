@@ -50,7 +50,7 @@ public class PresentationLayerTest {
 
         BerByteArrayOutputStream berOS = new BerByteArrayOutputStream(1000);
 
-        List<TransferSyntaxName> berObjectIdentifierList = new ArrayList<TransferSyntaxName>(1);
+        List<TransferSyntaxName> berObjectIdentifierList = new ArrayList<>(1);
         berObjectIdentifierList.add(new TransferSyntaxName(new int[] { 2, 1, 1 }));
 
         ContextList.SEQUENCE.TransferSyntaxNameList tsnl = new ContextList.SEQUENCE.TransferSyntaxNameList(
@@ -62,7 +62,7 @@ public class PresentationLayerTest {
         ContextList.SEQUENCE context_listSubSeq2 = new ContextList.SEQUENCE(new PresentationContextIdentifier(3),
                 new AbstractSyntaxName(new int[] { 1, 0, 9506, 2, 1 }), tsnl);
 
-        List<ContextList.SEQUENCE> context_listSubSeqList = new ArrayList<ContextList.SEQUENCE>(2);
+        List<ContextList.SEQUENCE> context_listSubSeqList = new ArrayList<>(2);
 
         context_listSubSeqList.add(context_listSubSeq);
         context_listSubSeqList.add(context_listSubSeq2);
@@ -72,7 +72,7 @@ public class PresentationLayerTest {
         PDVList.PresentationDataValues presDataValues = new PDVList.PresentationDataValues(new BerAnyNoDecode(91), null,
                 null);
         PDVList pdvList = new PDVList(null, new PresentationContextIdentifier(1), presDataValues);
-        List<PDVList> pdvListList = new ArrayList<PDVList>(1);
+        List<PDVList> pdvListList = new ArrayList<>(1);
         pdvListList.add(pdvList);
         FullyEncodedData fullyEncodedData = new FullyEncodedData(pdvListList);
         UserData userData = new UserData(null, fullyEncodedData);

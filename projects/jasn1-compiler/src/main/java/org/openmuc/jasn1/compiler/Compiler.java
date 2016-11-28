@@ -48,7 +48,7 @@ import org.openmuc.jasn1.compiler.parser.ASNParser;
 
 public class Compiler {
 
-    public final static String VERSION = "1.5.1-SNAPSHOT";
+    public final static String VERSION = "1.6.0";
 
     private String outputBaseDir = "./";
     private String basePackageName = "";

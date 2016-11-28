@@ -483,9 +483,9 @@ boolean_type returns [Object obj]
 	;
 				
 choice_type	returns [Object obj]
-{AsnChoice ch = new AsnChoice(); AsnElementTypeList eltplst ; 
+{AsnChoice ch = new AsnChoice(); List<AsnComponentType> eltplst; 
 obj = null;}
-	: (	CHOICE_KW L_BRACE (eltplst = elementType_list {ch.elementTypeList = eltplst ;}) R_BRACE ) 
+	: (	CHOICE_KW L_BRACE (eltplst = elementType_list {ch.componentTypes = eltplst ;}) R_BRACE ) 
 		{obj = ch; eltplst = null; ch = null;}
 	;
 
@@ -545,10 +545,10 @@ relativeOid_type returns [Object obj]
 		
 sequence_type returns [Object obj]
 {AsnSequenceSet seq = new AsnSequenceSet();
-AsnElementTypeList eltplist ; AsnConstraint cnstrnt ; obj = null;}
+List<AsnComponentType> eltplist ; AsnConstraint cnstrnt ; obj = null;}
 	:  ( SEQUENCE_KW {seq.isSequence = true;} 
 	    L_BRACE 
-	   (eltplist = elementType_list {seq.elementTypeList = eltplist;})? 
+	   (eltplist = elementType_list {seq.componentTypes = eltplist;})? 
 	    R_BRACE )
 		{obj = seq ; eltplist = null; seq =null; }
 	;
@@ -574,8 +574,8 @@ AsnConstraint cnstrnt; obj = null; Object referencedAsnType ; String s ;}
 	
 set_type returns [Object obj]
 {AsnSequenceSet set = new AsnSequenceSet();
-AsnElementTypeList eltplist ;obj = null;}
-	:  ( SET_KW L_BRACE (eltplist =  elementType_list {set.elementTypeList = eltplist ;})? R_BRACE )
+List<AsnComponentType> eltplist ;obj = null;}
+	:  ( SET_KW L_BRACE (eltplist =  elementType_list {set.componentTypes = eltplist ;})? R_BRACE )
 		{obj = set ; eltplist = null; set = null;}
 	;
 		
@@ -598,7 +598,7 @@ Object obj1 ; String s;}
 	;
 
 tagged_type returns [Object obj]
-{AsnTaggedType tgtyp = new AsnTaggedType();
+{AsnNamedType tgtyp = new AsnNamedType();
 AsnTag tg; Object obj1 = null; String s; obj = null;}
 	:	((tg = tag {tgtyp.tag = tg ;}) 
 		(s = tag_default { tgtyp.tagType = s ;})? 
@@ -743,14 +743,14 @@ typeorvalue returns [Object obj]
 	  {obj = obj1; obj1=null;}
 	;
 
-elementType_list returns [AsnElementTypeList elelist]
-{elelist = new AsnElementTypeList(); AsnElementType eletyp; int i=1; }
-	:	(ELLIPSIS | eletyp = elementType {if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.elements.add(eletyp);i++; }
-	    (COMMA (ELLIPSIS | (eletyp = elementType {if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.elements.add(eletyp);i++; })))*)
+elementType_list returns [List<AsnComponentType> elelist]
+{elelist = new ArrayList<>(); AsnComponentType eletyp; int i=1; }
+	:	(ELLIPSIS | eletyp = elementType {if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.add(eletyp);i++; }
+	    (COMMA (ELLIPSIS | (eletyp = elementType {if (eletyp.name.isEmpty()) {eletyp.name = "element" + i;};elelist.add(eletyp);i++; })))*)
 	;
 
-elementType	returns [AsnElementType eletyp]
-{eletyp = new AsnElementType();AsnValue val; 
+elementType	returns [AsnComponentType eletyp]
+{eletyp = new AsnComponentType();AsnValue val; 
 Object obj; AsnTag tg; String s;}
 	: (	((lid:LOWER {eletyp.name = lid.getText();})? 
 		(tg = tag { eletyp.tag = tg ;})? 
