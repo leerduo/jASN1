@@ -3,7 +3,19 @@ BEGIN
 
 TaggedSeqOf ::= SEQUENCE OF [3] EXPLICIT INTEGER
 
+TaggedChoice ::= [33] UnTaggedChoice
 
+UnTaggedChoice ::= CHOICE {
+	myInteger INTEGER,
+	myBoolean BOOLEAN
+}
+
+TaggedInteger ::= [33] EXPLICIT INTEGER
+
+TaggedSequence ::= [33] SEQUENCE {
+	myInteger INTEGER,
+	myBoolean BOOLEAN
+}
 
 
 SequenceOfAll ::= SEQUENCE {

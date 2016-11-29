@@ -30,6 +30,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openmuc.jasn1.ber.BerByteArrayOutputStream;
 import org.openmuc.jasn1.ber.types.BerInteger;
+import org.openmuc.jasn1.compiler.someexamples.generated.some_example.TaggedChoice;
 import org.openmuc.jasn1.compiler.someexamples.generated.some_example.TaggedSeqOf;
 
 public class TaggedSeqOfAndTaggedChoiceTest {
@@ -51,6 +52,29 @@ public class TaggedSeqOfAndTaggedChoiceTest {
 
         taggedSeqOf = new TaggedSeqOf(integerList);
         taggedSeqOf.decode(new ByteArrayInputStream(berByteArrayOutputStream.getArray()), true);
+
+    }
+
+    @Test
+    public void taggedChoiceTest() throws Exception {
+
+        // List<BerInteger> integerList = new ArrayList<>();
+        // integerList.add(new BerInteger(3));
+        // integerList.add(new BerInteger(4));
+        //
+        // TaggedSeqOf taggedSeqOf = new TaggedSeqOf(integerList);
+
+        TaggedChoice taggedChoice = new TaggedChoice(new BerInteger(1), null);
+
+        BerByteArrayOutputStream berByteArrayOutputStream = new BerByteArrayOutputStream(1000);
+        taggedChoice.encode(berByteArrayOutputStream, true);
+
+        // System.out.println(DatatypeConverter.printHexBinary(berByteArrayOutputStream.getArray()));
+
+        Assert.assertArrayEquals(DatatypeConverter.parseHexBinary("BF2103020101"), berByteArrayOutputStream.getArray());
+
+        // taggedSeqOf = new TaggedSeqOf(integerList);
+        // taggedSeqOf.decode(new ByteArrayInputStream(berByteArrayOutputStream.getArray()), true);
 
     }
 

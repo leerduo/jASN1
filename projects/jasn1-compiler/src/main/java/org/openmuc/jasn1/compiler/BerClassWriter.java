@@ -100,10 +100,15 @@ public class BerClassWriter {
 
         if (module.tagDefault.equals("IMPLICIT")) {
             isDefaultTagExplicit = false;
+            automaticTagging = false;
         }
         else if (module.tagDefault.equals("AUTOMATIC")) {
             isDefaultTagExplicit = false;
             automaticTagging = true;
+        }
+        else {
+            isDefaultTagExplicit = true;
+            automaticTagging = false;
         }
 
         for (AsnType typeDefinition : module.typesByName.values()) {
@@ -879,7 +884,7 @@ public class BerClassWriter {
         for (int j = 0; j < sequenceElements.size(); j++) {
             AsnComponentType sequenceElement = sequenceElements.get(j);
 
-            String explicitEncoding = "false";
+            String explicitEncoding = ", false";
 
             String elseString = "";
 
@@ -896,12 +901,12 @@ public class BerClassWriter {
                         + ", BerIdentifier.CONSTRUCTED" + ", " + getTagNum(sequenceElement) + ")) {");
 
                 write("subCodeLength += new BerLength().decode(is);");
-                explicitEncoding = "null";
+                explicitEncoding = ", null";
 
                 write(getSequenceElementName(sequenceElement) + " = new "
                         + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, " + explicitEncoding
+                write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is" + explicitEncoding
                         + ");");
 
                 write("}");
@@ -920,16 +925,11 @@ public class BerClassWriter {
                     }
                     if (hasExplicitTag(sequenceElement)) {
                         write("subCodeLength += new BerLength().decode(is);");
-                        if (getUniversalType(sequenceElement) instanceof AsnChoice) {
-                            explicitEncoding = "null";
+                        if (isDirectAny(sequenceElement)) {
+                            explicitEncoding = ", length.val";
                         }
                         else {
-                            explicitEncoding = "true";
-                        }
-                    }
-                    else {
-                        if (getUniversalType(sequenceElement) instanceof AsnChoice) {
-                            explicitEncoding = "null";
+                            explicitEncoding = ", true";
                         }
                     }
                 }
@@ -941,12 +941,12 @@ public class BerClassWriter {
                 write(getSequenceElementName(sequenceElement) + " = new "
                         + getClassNameOfStructureElement(sequenceElement) + "();");
 
-                if ("null".equals(explicitEncoding)) {
+                if (", null".equals(explicitEncoding)) {
                     write("BerLength length2 = new BerLength();");
                     write("subCodeLength += length2.decode(is);");
                 }
 
-                write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is, " + explicitEncoding
+                write("subCodeLength += " + getSequenceElementName(sequenceElement) + ".decode(is" + explicitEncoding
                         + ");");
 
                 write("}");
