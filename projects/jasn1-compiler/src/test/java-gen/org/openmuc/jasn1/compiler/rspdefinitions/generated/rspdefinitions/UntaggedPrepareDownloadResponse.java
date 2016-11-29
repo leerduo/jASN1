@@ -19,23 +19,23 @@ import org.openmuc.jasn1.compiler.rspdefinitions.generated.teletexdomaindefineda
 import org.openmuc.jasn1.compiler.rspdefinitions.generated.pkix1implicit88.*;
 import org.openmuc.jasn1.compiler.rspdefinitions.generated.pkix1explicit88.*;
 
-public class CancelSessionResponse {
+public class UntaggedPrepareDownloadResponse {
 
 	public byte[] code = null;
-	public CancelSessionResponseOk cancelSessionResponseOk = null;
+	public PrepareDownloadResponseOk downloadResponseOk = null;
 
-	public BerInteger cancelSessionResponseError = null;
+	public PrepareDownloadResponseError downloadResponseError = null;
 
-	public CancelSessionResponse() {
+	public UntaggedPrepareDownloadResponse() {
 	}
 
-	public CancelSessionResponse(byte[] code) {
+	public UntaggedPrepareDownloadResponse(byte[] code) {
 		this.code = code;
 	}
 
-	public CancelSessionResponse(CancelSessionResponseOk cancelSessionResponseOk, BerInteger cancelSessionResponseError) {
-		this.cancelSessionResponseOk = cancelSessionResponseOk;
-		this.cancelSessionResponseError = cancelSessionResponseError;
+	public UntaggedPrepareDownloadResponse(PrepareDownloadResponseOk downloadResponseOk, PrepareDownloadResponseError downloadResponseError) {
+		this.downloadResponseOk = downloadResponseOk;
+		this.downloadResponseError = downloadResponseError;
 	}
 
 	public int encode(BerByteArrayOutputStream os, boolean explicit) throws IOException {
@@ -47,17 +47,17 @@ public class CancelSessionResponse {
 
 		}
 		int codeLength = 0;
-		if (cancelSessionResponseError != null) {
-			codeLength += cancelSessionResponseError.encode(os, false);
-			// write tag: CONTEXT_CLASS, PRIMITIVE, 1
-			os.write(0x81);
+		if (downloadResponseError != null) {
+			codeLength += downloadResponseError.encode(os, false);
+			// write tag: CONTEXT_CLASS, CONSTRUCTED, 1
+			os.write(0xa1);
 			codeLength += 1;
 			return codeLength;
 
 		}
 		
-		if (cancelSessionResponseOk != null) {
-			codeLength += cancelSessionResponseOk.encode(os, false);
+		if (downloadResponseOk != null) {
+			codeLength += downloadResponseOk.encode(os, false);
 			// write tag: CONTEXT_CLASS, CONSTRUCTED, 0
 			os.write(0xa0);
 			codeLength += 1;
@@ -79,14 +79,14 @@ public class CancelSessionResponse {
 
 		BerLength length = new BerLength();
 		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 0)) {
-			cancelSessionResponseOk = new CancelSessionResponseOk();
-			codeLength += cancelSessionResponseOk.decode(is, false);
+			downloadResponseOk = new PrepareDownloadResponseOk();
+			codeLength += downloadResponseOk.decode(is, false);
 			return codeLength;
 		}
 
-		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.PRIMITIVE, 1)) {
-			cancelSessionResponseError = new BerInteger();
-			codeLength += cancelSessionResponseError.decode(is, false);
+		if (berIdentifier.equals(BerIdentifier.CONTEXT_CLASS, BerIdentifier.CONSTRUCTED, 1)) {
+			downloadResponseError = new PrepareDownloadResponseError();
+			codeLength += downloadResponseError.decode(is, false);
 			return codeLength;
 		}
 
@@ -103,12 +103,12 @@ public class CancelSessionResponse {
 	}
 
 	public String toString() {
-		if ( cancelSessionResponseOk!= null) {
-			return "CHOICE{cancelSessionResponseOk: " + cancelSessionResponseOk + "}";
+		if ( downloadResponseOk!= null) {
+			return "CHOICE{downloadResponseOk: " + downloadResponseOk + "}";
 		}
 
-		if ( cancelSessionResponseError!= null) {
-			return "CHOICE{cancelSessionResponseError: " + cancelSessionResponseError + "}";
+		if ( downloadResponseError!= null) {
+			return "CHOICE{downloadResponseError: " + downloadResponseError + "}";
 		}
 
 		return "unknown";

@@ -229,7 +229,9 @@ SmdpSigned2 ::= SEQUENCE {
 	bppEuiccOtpk [APPLICATION 73] OCTET STRING OPTIONAL 	-- otPK.EUICC.ECKA already used for binding the BPP, tag '5F49'
 }
 
-PrepareDownloadResponse ::= [33] CHOICE {  -- Tag 'BF21'
+PrepareDownloadResponse ::= [33] UntaggedPrepareDownloadResponse
+
+UntaggedPrepareDownloadResponse ::= CHOICE {  -- Tag 'BF21'
 	downloadResponseOk PrepareDownloadResponseOk,
 	downloadResponseError PrepareDownloadResponseError
 }
@@ -774,7 +776,7 @@ AuthenticateClientResponseEs11 ::= [64] CHOICE {  -- Tag 'BF40'
 
 AuthenticateClientOkEs11 ::= SEQUENCE {
 	transactionId TransactionId,
-	eventEntries SEQUENCE OF EventEntries
+	 myEventEntries  SEQUENCE OF EventEntries
 }
 
 EventEntries ::= SEQUENCE {
