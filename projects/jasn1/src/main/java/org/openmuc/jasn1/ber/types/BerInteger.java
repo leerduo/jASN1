@@ -22,6 +22,7 @@ package org.openmuc.jasn1.ber.types;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 
 import org.openmuc.jasn1.ber.BerByteArrayOutputStream;
 import org.openmuc.jasn1.ber.BerIdentifier;
@@ -37,6 +38,8 @@ public class BerInteger {
 
     public long value;
 
+    public BigInteger fullValue;
+
     public BerInteger() {
         id = identifier;
     }
@@ -48,6 +51,7 @@ public class BerInteger {
 
     public BerInteger(long val) {
         id = identifier;
+        this.fullValue = BigInteger.valueOf(val);
         this.value = val;
     }
 
@@ -65,14 +69,9 @@ public class BerInteger {
 
             codeLength = 1;
 
-            while (value > (Math.pow(2, (8 * codeLength) - 1) - 1)
-                    || value < Math.pow(-2, (8 * codeLength) - 1) && codeLength < 8) {
-                codeLength++;
-            }
-
-            for (int i = 0; i < codeLength; i++) {
-                os.write((int) (value >> 8 * (i)));
-            }
+            byte[] encoded = fullValue.toByteArray();
+            codeLength =encoded.length;
+            os.write(encoded);
 
             codeLength += BerLength.encodeLength(os, codeLength);
         }
@@ -95,7 +94,7 @@ public class BerInteger {
         BerLength length = new BerLength();
         codeLength += length.decode(is);
 
-        if (length.val < 1 || length.val > 8) {
+        if (length.val < 1) {
             throw new IOException("Decoded length of BerInteger is not correct");
         }
 
@@ -104,11 +103,8 @@ public class BerInteger {
 
         codeLength += length.val;
 
-        value = (byteCode[0] & 0x80) == 0x80 ? -1 : 0;
-        for (int i = 0; i < length.val; i++) {
-            value <<= 8;
-            value |= byteCode[i] & 0xff;
-        }
+        fullValue = new BigInteger(byteCode);
+        value = fullValue.longValue();
 
         return codeLength;
     }
